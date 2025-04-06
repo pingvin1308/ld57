@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -14,6 +15,9 @@ namespace Game.Scripts
         [SerializeField] 
         private int _artifactsCount;
 
+        [field: SerializeField]
+        public List<ArtifactData> CollectedArtifacts { get; private set; } = new();
+        
         [FormerlySerializedAs("money")] 
         [SerializeField] 
         private int _money;
@@ -44,9 +48,10 @@ namespace Game.Scripts
             Money = 0;
         }
 
-        public void OnArtifactChanged(int amount)
+        public void OnArtifactChanged(ArtifactData artifact)
         {
-            ArtifactsCount += amount;
+            ArtifactsCount += 1;
+            CollectedArtifacts.Add(artifact);
         }
 
         public void OnArtifactSpawned(Artifact artifact)

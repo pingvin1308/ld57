@@ -11,9 +11,9 @@ namespace Game.Scripts
         [field: SerializeField]
         public UnityEvent<Artifact> OnArtifactSpawned { get; set; }
 
-        public Artifact SpawnArtifact(Vector3 pos)
+        public Artifact SpawnArtifact(Vector3 pos, Transform levelTransform)
         {
-            var artifact = Instantiate(ArtifactPrefab, pos, Quaternion.identity);
+            var artifact = Instantiate(ArtifactPrefab, pos, Quaternion.identity, levelTransform);
             OnArtifactSpawned?.Invoke(artifact);
             return artifact;
         }

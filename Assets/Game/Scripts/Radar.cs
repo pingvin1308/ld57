@@ -1,28 +1,66 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Game.Scripts.Levels;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game.Scripts
 {
     public class Radar : MonoBehaviour
     {
-        [SerializeField] private List<Artifact> _artifacts = new();
+        public UnityEvent<float, float> DistanceChanged;
+        public UnityEvent<bool> ArtifactsDetected;
+        [SerializeField] private float distanceToNearestArtifact;
 
         [field: SerializeField]
         public Artifact NearestArtifact { get; private set; }
-        
-        public void OnLevelChanged(Level1 level)
+
+        [field: SerializeField]
+        public float Range { get; private set; }
+
+        public float DistanceToNearestArtifact
         {
-            _artifacts = level.Artifacts.ToList();
+            get => distanceToNearestArtifact;
+            private set
+            {
+                if (!Mathf.Approximately(distanceToNearestArtifact, value))
+                {
+                    DistanceChanged?.Invoke(Range, distanceToNearestArtifact);
+                }
+                
+                distanceToNearestArtifact = value;
+            }
         }
 
-        private void Update()
+        public void Scan(IReadOnlyCollection<Artifact> artifacts)
         {
-            NearestArtifact = _artifacts
-                .OrderBy(x => Vector3.Distance(transform.position, x.transform.position))
-                .FirstOrDefault();
+            NearestArtifact = artifacts
+                .Where(x => x != null)
+                .Select(x => new
+                {
+                    Distance = Vector3.Distance(transform.position, x.transform.position),
+                    Artifact = x
+                })
+                .Where(x => x.Distance < Range)
+                .OrderBy(x => x.Distance)
+                .FirstOrDefault()
+                ?.Artifact;
+
+            if (NearestArtifact != null)
+            {
+                ArtifactsDetected?.Invoke(true);
+                DistanceToNearestArtifact = Vector3.Distance(transform.position, NearestArtifact.transform.position);
+            }
+            else
+            {
+                ArtifactsDetected?.Invoke(false);
+                DistanceToNearestArtifact = 0;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            DistanceChanged?.RemoveAllListeners();
+            ArtifactsDetected?.RemoveAllListeners();
         }
     }
 }

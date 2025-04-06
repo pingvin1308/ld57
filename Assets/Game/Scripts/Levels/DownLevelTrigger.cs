@@ -4,13 +4,13 @@ using UnityEngine.Events;
 
 namespace Game.Scripts.Levels
 {
-    public class Level1 : MonoBehaviour
+    public class DownLevelTrigger : MonoBehaviour
     {
         [SerializeField] private List<Artifact> _artifacts = new();
 
         public IReadOnlyCollection<Artifact> Artifacts => _artifacts;
         
-        public UnityEvent<Level1> LevelChanged;
+        public UnityEvent<LevelDirection> LevelChanged;
         
         [field: SerializeField]
         public float OxygenConsumptionRate { get; private set; }
@@ -20,10 +20,8 @@ namespace Game.Scripts.Levels
             if (other.CompareTag("Player"))
             {
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
-                Debug.Log("Зашел на левел 1!");
-                var player = other.GetComponent<Player>();
-                player.OxygenConsumptionRate = OxygenConsumptionRate;
-                LevelChanged?.Invoke(this);
+                Debug.Log("Зашел на левел ниже");
+                LevelChanged?.Invoke(LevelDirection.Down);
             }
         }
         

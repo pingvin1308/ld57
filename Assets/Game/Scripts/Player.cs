@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using Game.Scripts.Levels;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 
@@ -11,6 +11,7 @@ namespace Game.Scripts
         private float _oxygenTimer = 0f;
         private Rigidbody2D _rigidbody;
         private Vector2 _movement;
+        private LevelBase _currentLevel;
 
         [field: SerializeField]
         public int Acceleration { get; private set; }
@@ -28,19 +29,23 @@ namespace Game.Scripts
         public Oxygen Oxygen { get; private set; }
 
         [field: SerializeField]
-        public float OxygenConsumptionRate { get; set; }
+        public Radar Radar { get; private set; }
+        
+        [field: SerializeField]
+        public float OxygenConsumptionRate { get; private set; }
 
+        public void OnLevelEnabled(LevelBase level)
+        {
+            _currentLevel = level;
+            OxygenConsumptionRate = level.OxygenConsumptionRate;
+        }
+        
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            Debug.Log("collected");
-        }
-
-        void Update()
+        private void Update()
         {
             var moveX = Input.GetAxisRaw("Horizontal");
             var moveY = Input.GetAxisRaw("Vertical");
@@ -54,6 +59,8 @@ namespace Game.Scripts
                 Oxygen.Use(OxygenConsumptionRate);
                 _oxygenTimer = 0f;
             }
+            
+            Radar?.Scan(_currentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
         }
 
         private void FixedUpdate()

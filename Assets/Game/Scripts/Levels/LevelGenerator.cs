@@ -4,13 +4,12 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
-namespace Game.Scripts
+namespace Game.Scripts.Levels
 {
     public class LevelGenerator : MonoBehaviour
     {
-        [SerializeField] private List<Artifact> _artifacts = new();
-
-        [SerializeField] private List<RectInt> _rooms = new();
+        [field: SerializeField]
+        public Player Player { get; private set; }
         
         [Header("Wall tiles")] [SerializeField]
         private TileBase[] wallTopTiles;
@@ -37,14 +36,7 @@ namespace Game.Scripts
         public ArtifactSpawner ArtifactSpawner { get; private set; }
 
         [field: SerializeField]
-        public Tilemap Tilemap { get; private set; }
-
-        [field: SerializeField]
-        public Tilemap WallTilemap { get; private set; }
-
-        [field: SerializeField]
         public RuleTile FloorRuleTile { get; private set; }
-
 
         [Header("Room settings")]
         [field: SerializeField]
@@ -59,27 +51,34 @@ namespace Game.Scripts
         [field: SerializeField]
         public int ArtifactsPerRoom { get; private set; }
 
+        [field: SerializeField]
+        public LevelBase LevelPrefab { get; private set; }
+
         private void Start()
         {
             Random.InitState(Random.Range(0, int.MinValue));
-            Generate();
         }
 
-        public void Generate()
+        public LevelBase Generate(int nextLevelNumber)
         {
-            Tilemap.ClearAllTiles();
-            WallTilemap.ClearAllTiles();
-            foreach (var artifact in _artifacts)
-            {
-                if (artifact == null)
-                {
-                    continue;
-                }
+            var levelGameObject = Instantiate(LevelPrefab, transform);
+            var rooms = GenerateFloor(levelGameObject.FloorTilemap);
+            GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
+            var artifacts = GenerateArtifacts(levelGameObject, rooms);
 
-                Destroy(artifact.gameObject);
-            }
-            _artifacts.Clear();
-            _rooms.Clear();
+            levelGameObject.Init(
+                artifacts: artifacts,
+                levelNumber: nextLevelNumber,
+                oxygenConsumptionRate: 1
+            );
+            
+            levelGameObject.LevelEnabled.AddListener(Player.OnLevelEnabled);
+            return levelGameObject;
+        }
+
+        private List<RectInt> GenerateFloor(Tilemap floorTilemap)
+        {
+            var rooms = new List<RectInt>();
 
             var maxRooms = MaxRooms;
             var mapWidth = MapWidth;
@@ -90,7 +89,7 @@ namespace Game.Scripts
                 var x = -(w / 2);
                 var y = -(h / 2);
                 var newRoom = new RectInt(x, y, w, h);
-                _rooms.Add(newRoom);
+                rooms.Add(newRoom);
             }
 
             for (var i = 0; i < maxRooms; i++)
@@ -101,21 +100,27 @@ namespace Game.Scripts
                 var y = Random.Range(-mapHeight / 2, mapHeight / 2 - h);
 
                 var newRoom = new RectInt(x, y, w, h);
-                _rooms.Add(newRoom);
+                rooms.Add(newRoom);
             }
 
-            foreach (var room in _rooms)
+            foreach (var room in rooms)
             {
                 for (var x = room.x; x < (room.x + room.width); x++)
                 {
                     for (var y = room.y; y < (room.y + room.height); y++)
                     {
-                        Tilemap.SetTile(new Vector3Int(x, y, 0), FloorRuleTile);
+                        floorTilemap.SetTile(new Vector3Int(x, y, 0), FloorRuleTile);
                     }
                 }
             }
 
-            var filteredRooms = _rooms.Where(x => x.Overlaps(new RectInt(0, 0, 1, 1)) == false);
+            return rooms;
+        }
+
+        private List<Artifact> GenerateArtifacts(LevelBase levelGameObject, List<RectInt> rooms)
+        {
+            var filteredRooms = rooms.Where(x => x.Overlaps(new RectInt(0, 0, 1, 1)) == false);
+            var artifacts = new List<Artifact>();
 
             var usedPositions = new HashSet<Vector2Int>();
             foreach (var room in filteredRooms)
@@ -136,17 +141,17 @@ namespace Game.Scripts
                     usedPositions.Add(pos);
 
                     var worldPos = new Vector3(pos.x + 0.5f, pos.y + 0.5f, 0);
-                    var createdArtifact = ArtifactSpawner.SpawnArtifact(worldPos);
-                    _artifacts.Add(createdArtifact);
+                    var createdArtifact = ArtifactSpawner.SpawnArtifact(worldPos, levelGameObject.transform);
+                    artifacts.Add(createdArtifact);
                 }
             }
 
-            GenerateWallsExplicit();
+            return artifacts;
         }
 
-        private void GenerateWallsExplicit()
+        private void GenerateWalls(Tilemap floorTilemap, Tilemap wallsTilemap)
         {
-            var bounds = Tilemap.cellBounds;
+            var bounds = floorTilemap.cellBounds;
 
             for (int x = bounds.xMin - 1; x <= bounds.xMax + 1; x++)
             {
@@ -155,12 +160,12 @@ namespace Game.Scripts
                     var pos = new Vector3Int(x, y, 0);
 
                     // Если здесь НЕТ пола, но есть пол РЯДОМ — ставим стену
-                    if (!Tilemap.HasTile(pos))
+                    if (!floorTilemap.HasTile(pos))
                     {
-                        bool up = Tilemap.HasTile(pos + Vector3Int.up);
-                        bool down = Tilemap.HasTile(pos + Vector3Int.down);
-                        bool left = Tilemap.HasTile(pos + Vector3Int.left);
-                        bool right = Tilemap.HasTile(pos + Vector3Int.right);
+                        bool up = floorTilemap.HasTile(pos + Vector3Int.up);
+                        bool down = floorTilemap.HasTile(pos + Vector3Int.down);
+                        bool left = floorTilemap.HasTile(pos + Vector3Int.left);
+                        bool right = floorTilemap.HasTile(pos + Vector3Int.right);
 
                         TileBase tile = null;
 
@@ -171,7 +176,7 @@ namespace Game.Scripts
                         else if (up && left) tile = GetRandom(wallCornerBRTiles);
                         if (tile != null)
                         {
-                            WallTilemap.SetTile(pos, tile);
+                            wallsTilemap.SetTile(pos, tile);
                             continue;
                         }
 
@@ -182,7 +187,7 @@ namespace Game.Scripts
                         else if (up && down && left && !right) tile = GetRandom(wallTRightTiles);
                         if (tile != null)
                         {
-                            WallTilemap.SetTile(pos, tile);
+                            wallsTilemap.SetTile(pos, tile);
                             continue;
                         }
 
@@ -194,33 +199,33 @@ namespace Game.Scripts
 
                         if (tile != null)
                         {
-                            WallTilemap.SetTile(pos, tile);
+                            wallsTilemap.SetTile(pos, tile);
                             continue;
                         }
 
-                        if (Tilemap.HasTile(pos + new Vector3Int(-1, 1, 0)) &&
+                        if (floorTilemap.HasTile(pos + new Vector3Int(-1, 1, 0)) &&
                             !up && !left)
                         {
                             tile = GetRandom(wallOuterCornerTLTiles);
                         }
-                        else if (Tilemap.HasTile(pos + new Vector3Int(1, 1, 0)) &&
+                        else if (floorTilemap.HasTile(pos + new Vector3Int(1, 1, 0)) &&
                                  !up && !right)
                         {
                             tile = GetRandom(wallOuterCornerTRTiles);
                         }
-                        else if (Tilemap.HasTile(pos + new Vector3Int(-1, -1, 0)) &&
+                        else if (floorTilemap.HasTile(pos + new Vector3Int(-1, -1, 0)) &&
                                  !down && !left)
                         {
                             tile = GetRandom(wallOuterCornerBLTiles);
                         }
-                        else if (Tilemap.HasTile(pos + new Vector3Int(1, -1, 0)) &&
+                        else if (floorTilemap.HasTile(pos + new Vector3Int(1, -1, 0)) &&
                                  !down && !right)
                         {
                             tile = GetRandom(wallOuterCornerBRTiles);
                         }
 
                         if (tile != null)
-                            WallTilemap.SetTile(pos, tile);
+                            wallsTilemap.SetTile(pos, tile);
                     }
                 }
             }
