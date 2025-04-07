@@ -3,8 +3,11 @@ using UnityEngine.Events;
 
 namespace Game.Scripts
 {
+    [RequireComponent(typeof(SpriteRenderer))]
     public class Artifact : MonoBehaviour
     {
+        private SpriteRenderer _spriteRenderer;
+        
         public UnityEvent<ArtifactData> Collected;
     
         [field: SerializeField]
@@ -13,14 +16,17 @@ namespace Game.Scripts
         [field: SerializeField]
         public Rarity Rarity { get; private set; }
 
+        
         public void Awake()
         {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
             Rarity = Rarity.Common;
-            Data = new ArtifactData
-            {
-                Rarity = Rarity.Common,
-                Value = 10
-            };
+        }
+
+        public void Init(ArtifactData data)
+        {
+            Data = data;
+            _spriteRenderer.sprite = data.Sprite;
         }
     
         private void OnTriggerEnter2D(Collider2D other)
@@ -28,9 +34,13 @@ namespace Game.Scripts
             if (other.CompareTag("Player"))
             {
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
-                Debug.Log("Предмет подобран!");
-                Collected?.Invoke(Data);
-                Destroy(gameObject); // Удалить кружок с сцены
+                var player = other.GetComponent<Player>();
+                if (player.Inventory.IsEnoughSpace)
+                {
+                    Debug.Log("Предмет подобран!");
+                    Collected?.Invoke(Data);
+                    Destroy(gameObject);
+                }
             }
         }
 
@@ -38,13 +48,6 @@ namespace Game.Scripts
         {
             Collected?.RemoveAllListeners();
         }
-    }
-
-    public class ArtifactData
-    {
-        public int Value { get; set; }
-        
-        public Rarity Rarity { get; set; }
     }
 
     public enum Rarity

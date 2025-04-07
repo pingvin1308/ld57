@@ -8,27 +8,32 @@ namespace Game.Scripts
 {
     public class Inventory : MonoBehaviour
     {
-        public UnityEvent<int> ArtifactsUpdated;
+        public UnityEvent<Inventory> ArtifactsUpdated;
         public UnityEvent<int> MoneyUpdated;
 
         [FormerlySerializedAs("artifactsCount")] 
         [SerializeField] 
         private int _artifactsCount;
 
-        [field: SerializeField]
-        public List<ArtifactData> CollectedArtifacts { get; private set; } = new();
-        
         [FormerlySerializedAs("money")] 
         [SerializeField] 
         private int _money;
+        
+        
+        [field: SerializeField]
+        public List<ArtifactData> CollectedArtifacts { get; private set; } = new();
+        
+        [field: SerializeField]
+        public int MaxSize { get; private set; }
 
+        public bool IsEnoughSpace => CollectedArtifacts.Count < MaxSize;
+        
         public int ArtifactsCount
         {
             get => _artifactsCount;
             private set
             {
                 _artifactsCount = value;
-                ArtifactsUpdated?.Invoke(_artifactsCount);
             } 
         }
     
@@ -48,15 +53,20 @@ namespace Game.Scripts
             Money = 0;
         }
 
-        public void OnArtifactChanged(ArtifactData artifact)
+        public void OnArtifactCollected(ArtifactData artifact)
         {
             ArtifactsCount += 1;
-            CollectedArtifacts.Add(artifact);
+
+            if (CollectedArtifacts.Count < MaxSize)
+            {
+                CollectedArtifacts.Add(artifact);
+                ArtifactsUpdated?.Invoke(this);
+            }
         }
 
         public void OnArtifactSpawned(Artifact artifact)
         {
-            artifact.Collected.AddListener(OnArtifactChanged);
+            artifact.Collected.AddListener(OnArtifactCollected);
         }
 
         public int DropArtifacts()

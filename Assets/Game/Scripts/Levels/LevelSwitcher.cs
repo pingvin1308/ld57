@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,11 +17,15 @@ namespace Game.Scripts.Levels
         
         [field: SerializeField]
         public ExpeditionHub ExpeditionHub { get; private set; }
-        
+
+        private void Awake()
+        {
+            CurrentLevel.Enable();
+        }
+
         public void SwitchLevel(LevelDirection direction)
         {
             var nextLevel = GetNextLevel(direction);
-
             if (nextLevel == ExpeditionHub)
             {
                 // reset levels

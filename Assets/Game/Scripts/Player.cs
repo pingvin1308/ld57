@@ -11,7 +11,9 @@ namespace Game.Scripts
         private float _oxygenTimer = 0f;
         private Rigidbody2D _rigidbody;
         private Vector2 _movement;
-        private LevelBase _currentLevel;
+        
+        [field: SerializeField]
+        public LevelBase CurrentLevel { get; private set; }
 
         [field: SerializeField]
         public int Acceleration { get; private set; }
@@ -36,7 +38,7 @@ namespace Game.Scripts
 
         public void OnLevelEnabled(LevelBase level)
         {
-            _currentLevel = level;
+            CurrentLevel = level;
             OxygenConsumptionRate = level.OxygenConsumptionRate;
         }
         
@@ -60,7 +62,7 @@ namespace Game.Scripts
                 _oxygenTimer = 0f;
             }
             
-            Radar?.Scan(_currentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
+            Radar?.Scan(CurrentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
         }
 
         private void FixedUpdate()

@@ -6,31 +6,32 @@ namespace Game.Scripts.UI
     public class RadarUI : MonoBehaviour
     {
         [field: SerializeField]
-        public Slider Distance { get; private set; }
+        public bool ArtifactDetected { get; private set; }
 
         [field: SerializeField]
-        public bool ArtifactDetected { get; private set; }
-        
+        public SignalUI SignalUI { get; private set; }
+
         public void OnArtifactsDetected(bool detected)
         {
             ArtifactDetected = detected;
 
             if (!detected)
             {
-                Distance.value = 0;
+                SignalUI.SetValue(0);
             }
         }
-        
+
         public void OnDistanceChanged(float range, float distance)
         {
             if (!ArtifactDetected)
             {
                 return;
             }
-            
-            var scale = Distance.maxValue / range;
-            var value = distance * scale;
-            Distance.value = Distance.maxValue - Mathf.Clamp(value, Distance.minValue, Distance.maxValue);
+
+            var scale = SignalUI.MaxValue / range;
+            var scaledValue = distance * scale;
+            var signalValue = SignalUI.MaxValue - Mathf.Clamp(scaledValue, SignalUI.MinValue, SignalUI.MaxValue);
+            SignalUI.SetValue((int)signalValue);
         }
     }
 }
