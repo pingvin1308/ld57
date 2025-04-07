@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Game.Scripts.UI.Inventory;
 using TMPro;
 using UnityEngine;
 
-namespace Game.Scripts.UI
+namespace Game.Scripts.UI.Inventory
 {
     public class ArtifactsUI : MonoBehaviour
     {
@@ -14,30 +13,37 @@ namespace Game.Scripts.UI
         public ArtifactItemUI ArtifactItemUIPrefab { get; private set; }
         
         [field: SerializeField]
-        public List<ArtifactItemUI> Artifacts { get; private set; }        
+        public List<ArtifactItemUI> Artifacts { get; private set; }     
         
         [field: SerializeField]
-        public ArtifactSpawner ArtifactSpawner { get; private set; }
-        
-        public void OnArtifactsCountChanged(Scripts.Inventory inventory)
+        public Scripts.Inventory Inventory { get; private set; }
+
+        private void OnEnable()
+        {
+            Inventory.OnInventoryChanged.AddListener(UpdateUI);
+            UpdateUI();
+        }
+
+        private void OnDisable()
+        {
+            Inventory.OnInventoryChanged.RemoveAllListeners();
+        }
+
+        private void UpdateUI()
         {
             foreach (var artifact in Artifacts)
             {
-                if (artifact != null)
-                {
-                    Destroy(artifact.gameObject);
-                }
+                Destroy(artifact.gameObject);
             }
             Artifacts.Clear();
             
-            foreach (var artifact in inventory.CollectedArtifacts)
+            foreach (var artifact in Inventory.CollectedArtifacts)
             {
                 var artifactGameObject = Instantiate(ArtifactItemUIPrefab, transform);
                 artifactGameObject.Init(artifact);
+                artifactGameObject.ArtifactDroped.AddListener(Inventory.DropArtifact);
                 Artifacts.Add(artifactGameObject);
                 ArtifactsCount.text = Artifacts.Count.ToString();
-                    
-                artifactGameObject.ArtifactDroped.AddListener(ArtifactSpawner.DropArtifact);
             }            
         }
     }

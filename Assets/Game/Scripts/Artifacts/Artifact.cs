@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,6 +8,7 @@ namespace Game.Scripts
     public class Artifact : MonoBehaviour
     {
         private SpriteRenderer _spriteRenderer;
+        private bool _isPickable;
         
         public UnityEvent<ArtifactData> Collected;
     
@@ -16,7 +18,6 @@ namespace Game.Scripts
         [field: SerializeField]
         public Rarity Rarity { get; private set; }
 
-        
         public void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -27,10 +28,22 @@ namespace Game.Scripts
         {
             Data = data;
             _spriteRenderer.sprite = data.Sprite;
+            StartCoroutine(SetPickable());
         }
-    
+
+        private IEnumerator SetPickable()
+        {
+            yield return new WaitForSeconds(0.5f);
+            _isPickable = true;
+        }
+        
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (_isPickable == false)
+            {
+                return;
+            }
+            
             if (other.CompareTag("Player"))
             {
                 // Здесь можно добавить звук, эффект, счетчик и т.д.

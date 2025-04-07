@@ -37,7 +37,7 @@ namespace Game.Scripts.UI.Inventory
             Destroy(gameObject);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             ArtifactDroped?.RemoveAllListeners();
         }

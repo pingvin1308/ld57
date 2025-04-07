@@ -25,7 +25,7 @@ namespace Game.Scripts.Levels
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
                 Debug.Log("Зашел на левел выше");
                 LevelChanged?.Invoke(LevelDirection.Up);
-                player.transform.position = DownLevelTrigger.transform.position + new Vector3(0, 2);
+                player.transform.position = DownLevelTrigger.transform.position + new Vector3(0, 1);
             }
         }
 

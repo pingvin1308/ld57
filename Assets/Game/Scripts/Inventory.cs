@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -10,7 +11,8 @@ namespace Game.Scripts
     {
         public UnityEvent<Inventory> ArtifactsUpdated;
         public UnityEvent<int> MoneyUpdated;
-
+        public UnityEvent OnInventoryChanged;
+        
         [FormerlySerializedAs("artifactsCount")] 
         [SerializeField] 
         private int _artifactsCount;
@@ -19,9 +21,13 @@ namespace Game.Scripts
         [SerializeField] 
         private int _money;
         
+        [field: SerializeField]
+        public ArtifactSpawner ArtifactSpawner { get; set; }
         
         [field: SerializeField]
         public List<ArtifactData> CollectedArtifacts { get; private set; } = new();
+
+        public ObservableCollection<ArtifactData> Arts { get; private set; } = new();
         
         [field: SerializeField]
         public int MaxSize { get; private set; }
@@ -61,6 +67,7 @@ namespace Game.Scripts
             {
                 CollectedArtifacts.Add(artifact);
                 ArtifactsUpdated?.Invoke(this);
+                OnInventoryChanged?.Invoke();
             }
         }
 
@@ -73,6 +80,7 @@ namespace Game.Scripts
         {
             var artifactsCount = ArtifactsCount;
             ArtifactsCount = 0;
+            OnInventoryChanged?.Invoke();
             return artifactsCount;
         }
 
@@ -90,6 +98,13 @@ namespace Game.Scripts
             
             Money -= price;
             return true;
+        }
+
+        public void DropArtifact(ArtifactData artifact)
+        {
+            ArtifactSpawner.DropArtifact(artifact);
+            CollectedArtifacts.Remove(artifact);
+            OnInventoryChanged?.Invoke();
         }
     }
 }

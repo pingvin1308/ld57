@@ -19,7 +19,7 @@ namespace Game.Scripts.Levels
                 LevelChanged?.Invoke(LevelDirection.Down);
 
                 var player = other.GetComponent<Player>();
-                player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -2);
+                player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -3);
             }
         }
 
