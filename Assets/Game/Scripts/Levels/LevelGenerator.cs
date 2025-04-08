@@ -62,16 +62,15 @@ namespace Game.Scripts.Levels
         public LevelBase Generate(int nextLevelNumber)
         {
             var levelGameObject = Instantiate(LevelPrefab, transform);
-            var rooms = GenerateFloor(levelGameObject.FloorTilemap);
-            GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
-            var artifacts = GenerateArtifacts(levelGameObject, rooms);
-
             levelGameObject.Init(
-                artifacts: artifacts,
                 levelNumber: nextLevelNumber,
                 oxygenConsumptionRate: 1
             );
             
+            var rooms = GenerateFloor(levelGameObject.FloorTilemap);
+            GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
+            var artifacts = GenerateArtifacts(levelGameObject, rooms);
+            levelGameObject.AddArtifacts(artifacts.ToArray());
             levelGameObject.LevelEnabled.AddListener(Player.OnLevelEnabled);
             return levelGameObject;
         }
@@ -141,7 +140,7 @@ namespace Game.Scripts.Levels
                     usedPositions.Add(pos);
 
                     var worldPos = new Vector3(pos.x + 0.5f, pos.y + 0.5f, 0);
-                    var createdArtifact = ArtifactSpawner.SpawnArtifact(worldPos, levelGameObject.transform);
+                    var createdArtifact = ArtifactSpawner.SpawnArtifact(worldPos, levelGameObject);
                     artifacts.Add(createdArtifact);
                 }
             }

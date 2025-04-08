@@ -51,6 +51,7 @@ namespace Game.Scripts.Levels
 
             if (direction == LevelDirection.Down)
             {
+                Debug.Log($"Generate level: {nextLevelNumber}");
                 var createdLevel = LevelGenerator.Generate(nextLevelNumber);
                 _levelCache.Add(nextLevelNumber, createdLevel);
                 return createdLevel;

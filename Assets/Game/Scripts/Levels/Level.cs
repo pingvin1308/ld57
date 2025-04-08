@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Game.Scripts.Levels
 
         public UnityEvent<LevelBase> LevelEnabled;
         [SerializeField] 
-        private List<Artifact> _artifacts;
+        private List<Artifact> _artifacts = new();
 
         [field: SerializeField]
         public int LevelNumber { get; private set; }
@@ -32,7 +33,7 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public Tilemap WallsTilemap { get; private set; }
         
-        public void Init(IReadOnlyCollection<Artifact> artifacts, int levelNumber, float oxygenConsumptionRate)
+        public void Init(int levelNumber, float oxygenConsumptionRate, IReadOnlyCollection<Artifact> artifacts = null)
         {
             if (_initialized)
             {
@@ -40,16 +41,20 @@ namespace Game.Scripts.Levels
                 return;
             }
 
-            _artifacts = artifacts.ToList();
+            if (artifacts is { Count: > 0 })
+            {
+                _artifacts.AddRange(artifacts);
+            }
+
             LevelNumber = levelNumber;
             OxygenConsumptionRate = oxygenConsumptionRate;
             
             _initialized = true;
         }
 
-        public void AddArtifact(Artifact artifact)
+        public void AddArtifacts(params Artifact[] artifacts)
         {
-            _artifacts.Add(artifact);
+            _artifacts.AddRange(artifacts);
         }
         
         public void Disable()

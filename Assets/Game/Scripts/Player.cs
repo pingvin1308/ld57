@@ -33,7 +33,7 @@ namespace Game.Scripts
         public Oxygen Oxygen { get; private set; }
 
         [field: SerializeField]
-        public Radar Radar { get; private set; }
+        public Detector Detector { get; private set; }
 
         [field: SerializeField]
         public float OxygenConsumptionRate { get; private set; }
@@ -61,12 +61,14 @@ namespace Game.Scripts
                 _oxygenTimer = 0f;
             }
 
+            var speedModifier = 0;
             var sneakers = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.Sneakers);
-            Speed.Apply(sneakers);
+            speedModifier += sneakers * 2;
 
             var lightWeight = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.LightWeight);
-            Speed.Apply(-lightWeight);
-
+            speedModifier += -lightWeight * 2;
+            Speed.Apply(speedModifier);
+            
             foreach (var mirror in Inventory.CollectedArtifacts.Where(x => x.ArtifactId == ArtifactId.MovementMirror))
             {
                 inputDirection = -inputDirection;
@@ -75,7 +77,7 @@ namespace Game.Scripts
             _movement = GetMovement(inputDirection);
    
 
-            Radar?.Scan(CurrentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
+            Detector?.Scan(CurrentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
         }
 
         private Vector2 GetMovement(Vector2 inputDirection)

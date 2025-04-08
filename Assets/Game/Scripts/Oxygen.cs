@@ -18,7 +18,7 @@ namespace Game.Scripts
             {
                 if (!Mathf.Approximately(_volume, value))
                 {
-                    _volume = Mathf.Max(value, 0);
+                    _volume = Mathf.Clamp(value, 0, MaxVolume);
                     VolumeChanged?.Invoke(_volume);
                 }
             }

@@ -9,9 +9,12 @@ namespace Game.Scripts
     {
         private SpriteRenderer _spriteRenderer;
         private bool _isPickable;
-        
+
         public UnityEvent<ArtifactData> Collected;
-    
+
+        [field: SerializeField]
+        public bool IsRevealed { get; private set; }
+
         [field: SerializeField]
         public ArtifactData Data { get; private set; }
 
@@ -28,12 +31,19 @@ namespace Game.Scripts
         {
             Data = data;
             _spriteRenderer.sprite = data.Sprite;
+            _spriteRenderer.enabled = false;
+        }
+        
+        public void Reveal()
+        {
             StartCoroutine(SetPickable());
         }
 
         private IEnumerator SetPickable()
         {
             yield return new WaitForSeconds(0.5f);
+            IsRevealed = true;
+            _spriteRenderer.enabled = true;
             _isPickable = true;
         }
         
@@ -43,7 +53,7 @@ namespace Game.Scripts
             {
                 return;
             }
-            
+
             if (other.CompareTag("Player"))
             {
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
