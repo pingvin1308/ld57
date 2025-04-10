@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Scripts
+namespace Game.Scripts.Artifacts
 {
     [CreateAssetMenu(menuName = "Artifacts/ArtifactsDatabase")]
     public class ArtifactsDatabase : ScriptableObject

@@ -13,13 +13,25 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public LevelBase CurrentLevel { get; private set; }
 
-        
         [field: SerializeField]
         public ExpeditionHub ExpeditionHub { get; private set; }
 
         private void Awake()
         {
             CurrentLevel.Enable();
+        }
+
+        public void BackToHub()
+        {
+            foreach (var level in _levelCache)
+            {
+                Destroy(level.Value.gameObject);
+            }
+            
+            CurrentLevel.Disable();
+            CurrentLevel = ExpeditionHub;
+            CurrentLevel.Enable();
+            _levelCache.Clear();
         }
 
         public void SwitchLevel(LevelDirection direction)

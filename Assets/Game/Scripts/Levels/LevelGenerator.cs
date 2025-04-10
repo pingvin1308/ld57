@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Scripts.Artifacts;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -10,7 +12,7 @@ namespace Game.Scripts.Levels
     {
         [field: SerializeField]
         public Player Player { get; private set; }
-        
+
         [Header("Wall tiles")] [SerializeField]
         private TileBase[] wallTopTiles;
 
@@ -54,6 +56,9 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public LevelBase LevelPrefab { get; private set; }
 
+        [field: SerializeField]
+        public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
+
         private void Start()
         {
             Random.InitState(Random.Range(0, int.MinValue));
@@ -61,12 +66,15 @@ namespace Game.Scripts.Levels
 
         public LevelBase Generate(int nextLevelNumber)
         {
+            var levelSettings = LevelSettingsDatabase.LevelSettings
+                .FirstOrDefault(x => x.LevelNumber == Math.Abs(nextLevelNumber));
+            
             var levelGameObject = Instantiate(LevelPrefab, transform);
             levelGameObject.Init(
                 levelNumber: nextLevelNumber,
-                oxygenConsumptionRate: 1
+                oxygenConsumptionRate: levelSettings?.OxygenConsumptionRate ?? 10
             );
-            
+
             var rooms = GenerateFloor(levelGameObject.FloorTilemap);
             GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
             var artifacts = GenerateArtifacts(levelGameObject, rooms);

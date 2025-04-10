@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Game.Scripts.Artifacts;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -34,14 +35,6 @@ namespace Game.Scripts
 
         public bool IsEnoughSpace => CollectedArtifacts.Count < MaxSize;
         
-        public int ArtifactsCount
-        {
-            get => _artifactsCount;
-            private set
-            {
-                _artifactsCount = value;
-            } 
-        }
     
         public int Money
         {
@@ -55,14 +48,11 @@ namespace Game.Scripts
 
         private void Awake()
         {
-            ArtifactsCount = 0;
             Money = 0;
         }
 
         public void OnArtifactCollected(ArtifactData artifact)
         {
-            ArtifactsCount += 1;
-
             if (CollectedArtifacts.Count < MaxSize)
             {
                 CollectedArtifacts.Add(artifact);
@@ -76,12 +66,10 @@ namespace Game.Scripts
             artifact.Collected.AddListener(OnArtifactCollected);
         }
 
-        public int DropArtifacts()
+        public void DropArtifacts()
         {
-            var artifactsCount = ArtifactsCount;
-            ArtifactsCount = 0;
+            CollectedArtifacts.Clear();
             OnInventoryChanged?.Invoke();
-            return artifactsCount;
         }
 
         public void AddMoney(int money)

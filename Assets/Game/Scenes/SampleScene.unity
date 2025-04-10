@@ -4407,7 +4407,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -5046,6 +5046,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   <Player>k__BackingField: {fileID: 1286833638}
+  <LevelSettingsDatabase>k__BackingField: {fileID: 11400000, guid: f6a77fb5fdf999340bdafc8a5d87b96b, type: 2}
 --- !u!1 &789384723
 GameObject:
   m_ObjectHideFlags: 0
@@ -5372,8 +5373,10 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   _volume: 100
-  <Upgrade>k__BackingField: 0
-  <MaxVolume>k__BackingField: 100
+  <UpgradeLevel>k__BackingField: 0
+  <MaxVolume>k__BackingField:
+    <BaseValue>k__BackingField: 100
+    <Modifier>k__BackingField: 0
 --- !u!1 &912140800
 GameObject:
   m_ObjectHideFlags: 0
@@ -6360,6 +6363,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e3771eaf15dde9459543b9048dc51a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerDied:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1011419412}
+        m_TargetAssemblyTypeName: Game.Scripts.Levels.LevelSwitcher, Assembly-CSharp
+        m_MethodName: BackToHub
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   <Speed>k__BackingField:
     <BaseValue>k__BackingField: 4
     <Modifier>k__BackingField: 0
@@ -6666,7 +6684,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0.012438655, y: -0.8775418}
-  m_Radius: 1.0625
+  m_Radius: 0.3
 --- !u!1 &1301780015
 GameObject:
   m_ObjectHideFlags: 0
@@ -6973,6 +6991,7 @@ MonoBehaviour:
   <MapHeight>k__BackingField: 40
   <ArtifactsPerRoom>k__BackingField: 1
   <LevelPrefab>k__BackingField: {fileID: 7423060042904411196, guid: e94367598acda1c4988390b3d444f8cd, type: 3}
+  <LevelSettingsDatabase>k__BackingField: {fileID: 11400000, guid: f6a77fb5fdf999340bdafc8a5d87b96b, type: 2}
 --- !u!1 &1359788623
 GameObject:
   m_ObjectHideFlags: 0
@@ -7086,7 +7105,7 @@ MonoBehaviour:
         m_CallState: 2
   _artifacts: []
   <LevelNumber>k__BackingField: 0
-  <OxygenConsumptionRate>k__BackingField: -10
+  <OxygenConsumptionRate>k__BackingField: -20
   <FloorTilemap>k__BackingField: {fileID: 608320921}
   <WallsTilemap>k__BackingField: {fileID: 1992754705}
 --- !u!1 &1438329984
@@ -7421,7 +7440,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: -0.005047083, y: -1.6880586}
-  m_Radius: 1.0625
+  m_Radius: 0.3
 --- !u!1 &1457221460
 GameObject:
   m_ObjectHideFlags: 0
@@ -7958,6 +7977,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6250cad204e149d9a2478f621f7e0a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Price>k__BackingField: 20
+  <Upgrade>k__BackingField: 50
 --- !u!1 &1634026818
 GameObject:
   m_ObjectHideFlags: 0

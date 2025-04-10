@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Game.Scripts
+namespace Game.Scripts.Artifacts
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class Artifact : MonoBehaviour

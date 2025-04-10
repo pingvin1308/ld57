@@ -11,6 +11,9 @@ namespace Game.Scripts
         [FormerlySerializedAs("volume")] [SerializeField]
         private float _volume;
 
+        [field: SerializeField]
+        public int UpgradeLevel { get; private set; }
+        
         public float Volume
         {
             get => _volume;
@@ -18,33 +21,29 @@ namespace Game.Scripts
             {
                 if (!Mathf.Approximately(_volume, value))
                 {
-                    _volume = Mathf.Clamp(value, 0, MaxVolume);
+                    _volume = Mathf.Clamp(value, 0, MaxVolume.BaseValue + MaxVolume.Modifier);
                     VolumeChanged?.Invoke(_volume);
                 }
             }
         }
 
         [field: SerializeField]
-        public float Upgrade { get; private set; }
-        
-        [field: SerializeField]
-        public float MaxVolume { get; private set; }
+        public Attribute<float> MaxVolume { get; private set; }
 
         public void Use(float amount)
         {
-            float reduced = amount - Upgrade;
-            float actualConsumption = Mathf.Max(reduced, amount * 0.1f);
-            Volume -= actualConsumption;
+            Volume -= amount;
         }
 
-        public void ApplyUpgrade(float upgrade)
+        public void ApplyUpgrade(float upgrade, int upgradeLevel)
         {
-            Upgrade += upgrade;
+            UpgradeLevel = upgradeLevel;
+            MaxVolume.Apply(upgrade);
         }
 
         public void Restore()
         {
-            Volume = MaxVolume;
+            Volume = MaxVolume.BaseValue + MaxVolume.Modifier;
         }
     }
 }

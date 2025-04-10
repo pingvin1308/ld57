@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using Game.Scripts.Artifacts;
 using Game.Scripts.Levels;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Events;
 using Vector2 = UnityEngine.Vector2;
 
 namespace Game.Scripts
@@ -13,6 +15,8 @@ namespace Game.Scripts
         private float _oxygenTimer;
         private Rigidbody2D _rigidbody;
         private Vector2 _movement;
+
+        public UnityEvent PlayerDied;
 
         [field: SerializeField]
         public Attribute<float> Speed { get; private set; }
@@ -49,17 +53,26 @@ namespace Game.Scripts
             _rigidbody = GetComponent<Rigidbody2D>();
         }
 
+        private void OnDestroy()
+        {
+            PlayerDied?.RemoveAllListeners();
+        }
+
         private void Update()
         {
+            if (Oxygen.Volume == 0)
+            {
+                Oxygen.Restore();
+                Inventory.DropArtifacts();
+                Inventory.SpendMoney(300);
+                PlayerDied?.Invoke();
+                return;
+            }
+            
             var moveX = Input.GetAxisRaw("Horizontal");
             var moveY = Input.GetAxisRaw("Vertical");
             var inputDirection = new Vector2(moveX, moveY).normalized;
-            _oxygenTimer += Time.deltaTime;
-            if (_oxygenTimer >= 1f)
-            {
-                Oxygen.Use(OxygenConsumptionRate);
-                _oxygenTimer = 0f;
-            }
+            Oxygen.Use(OxygenConsumptionRate * Time.deltaTime);
 
             var speedModifier = 0;
             var sneakers = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.Sneakers);

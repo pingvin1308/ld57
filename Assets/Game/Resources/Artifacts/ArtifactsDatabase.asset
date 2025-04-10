@@ -12,4 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af51291d8e77403eaa0542e8bedd2cca, type: 3}
   m_Name: ArtifactsDatabase
   m_EditorClassIdentifier: 
-  <AllArtifacts>k__BackingField: []
+  <AllArtifacts>k__BackingField:
+  - {fileID: 11400000, guid: f5e5563fd704ea741a1b36c73adb292a, type: 2}
+  - {fileID: 11400000, guid: 01ad451c3e096e445ad2784846a0e302, type: 2}
+  - {fileID: 11400000, guid: 6ad33299087378448b1176441f0fb244, type: 2}
+  - {fileID: 11400000, guid: bf9e84e6048be0342a9b6677d78a1efa, type: 2}
+  - {fileID: 11400000, guid: 206d78863f867544c9a5926504f68be5, type: 2}
+  - {fileID: 11400000, guid: 6162d8e0c0593154eba1ed03aeab86ee, type: 2}
+  - {fileID: 11400000, guid: a938ef8185a4a8c4b9aae6fd0fd707cf, type: 2}
+  - {fileID: 11400000, guid: 3f64c3b8ae432114da7dda596e941caf, type: 2}

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Scripts
+namespace Game.Scripts.Artifacts
 {
     [CreateAssetMenu(menuName = "Artifacts/ArtifactData")]
     public class ArtifactData : ScriptableObject
@@ -27,7 +27,8 @@ namespace Game.Scripts
         LightWeight,
         Sneakers,
         SlippyBanana,
-        StinkyCheese
+        StinkyCheese,
+        ShinyStone
         
     }
     
