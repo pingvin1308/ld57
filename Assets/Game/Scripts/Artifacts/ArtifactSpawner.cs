@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Game.Scripts.Levels;
 using UnityEngine;
 using UnityEngine.Events;

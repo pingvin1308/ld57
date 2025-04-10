@@ -19,13 +19,13 @@ namespace Game.Scripts
         public UnityEvent PlayerDied;
 
         [field: SerializeField]
-        public Attribute<float> Speed { get; private set; }
+        public FloatAttribute Speed { get; private set; }
 
         [field: SerializeField]
-        public Attribute<float> Acceleration { get; private set; }
+        public FloatAttribute Acceleration { get; private set; }
 
         [field: SerializeField]
-        public Attribute<float> Friction { get; private set; }
+        public FloatAttribute Friction { get; private set; }
 
         [field: SerializeField]
         public LevelBase CurrentLevel { get; private set; }
@@ -95,9 +95,9 @@ namespace Game.Scripts
 
         private Vector2 GetMovement(Vector2 inputDirection)
         {
-            var acceleration = Acceleration.BaseValue + Acceleration.Modifier;
-            var speed = Speed.BaseValue + Speed.Modifier;
-            var friction = Friction.BaseValue + Friction.Modifier;
+            var acceleration = Acceleration.Current;
+            var speed = Speed.Current;
+            var friction = Friction.Current;
 
             var lerpWeight = Time.deltaTime * (inputDirection != Vector2.zero ? acceleration : friction);
             return Vector2.Lerp(_movement, inputDirection * speed, lerpWeight);
@@ -109,6 +109,13 @@ namespace Game.Scripts
         }
     }
 
+    [Serializable]
+    [InlineProperty]
+    public class FloatAttribute : Attribute<float>
+    {
+        public float Current => BaseValue + Modifier;
+    }
+    
     [Serializable]
     [InlineProperty]
     public class Attribute<TValue>

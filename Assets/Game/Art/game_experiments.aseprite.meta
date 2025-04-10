@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: game_experiments
     originalName: 
-    pivot: {x: 0.22962962, y: -0.4407295}
+    pivot: {x: 0.22962962, y: -0.41492537}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -134,7 +134,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 270
-      height: 329
+      height: 335
     spriteID: 414e99ae4cac913479367b3405c3562f
     spriteBone: []
     spriteOutline: []
@@ -158,9 +158,9 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 194
-        y: 145
+        y: 139
         width: 270
-        height: 329
+        height: 335
       spriteId: 414e99ae4cac913479367b3405c3562f
     linkedCells: []
     parentIndex: -1
