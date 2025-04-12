@@ -18,13 +18,9 @@ namespace Game.Scripts.Artifacts
         [field: SerializeField]
         public ArtifactData Data { get; private set; }
 
-        [field: SerializeField]
-        public Rarity Rarity { get; private set; }
-
         public void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
-            Rarity = Rarity.Common;
         }
 
         public void Init(ArtifactData data)
@@ -71,12 +67,5 @@ namespace Game.Scripts.Artifacts
         {
             Collected?.RemoveAllListeners();
         }
-    }
-
-    public enum Rarity
-    {
-        Common = 0,
-        Rare = 1,
-        Unique = 2,
     }
 }

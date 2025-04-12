@@ -16,6 +16,12 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public ExpeditionHub ExpeditionHub { get; private set; }
 
+        [field: SerializeField]
+        public UpLevelTrigger UpLevelTrigger { get; private set; }
+        
+        [field: SerializeField]
+        public Player Player { get; private set; }
+        
         private void Awake()
         {
             CurrentLevel.Enable();
@@ -29,6 +35,8 @@ namespace Game.Scripts.Levels
             }
             
             CurrentLevel.Disable();
+            Player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -3);
+
             CurrentLevel = ExpeditionHub;
             CurrentLevel.Enable();
             _levelCache.Clear();

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ae70098ab0e5b9e4fbbb8c52edb459a0
+guid: 7438545c02288e64ebb4088fe5347863
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,9 +123,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: game_experiments
+  - name: dialogbox
     originalName: 
-    pivot: {x: 0.5228758, y: -0.17910448}
+    pivot: {x: 0.5, y: -0.7307693}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,9 +133,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 459
-      height: 402
-    spriteID: 414e99ae4cac913479367b3405c3562f
+      width: 96
+      height: 26
+    spriteID: 203c32a1c1df1444080f46d83b520a0e
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -147,21 +147,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -723488733
-    name: game_experiments
+    guid: -996101731
+    name: dialogbox
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: game_experiments
+    - name: dialogbox
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 16
-        y: 72
-        width: 459
-        height: 402
-      spriteId: 414e99ae4cac913479367b3405c3562f
+        y: 19
+        width: 96
+        height: 26
+      spriteId: 203c32a1c1df1444080f46d83b520a0e
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -180,5 +180,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 512, y: 512}
-  previousTextureSize: {x: 512, y: 512}
+  canvasSize: {x: 128, y: 64}
+  previousTextureSize: {x: 128, y: 64}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game.Scripts.Artifacts
@@ -24,6 +25,13 @@ namespace Game.Scripts.Artifacts
         public ArtifactData GetByID(ArtifactId id)
         {
             return AllArtifacts.Find(x => x.ArtifactId == id);
+        }
+
+        public ArtifactData[] Get(int levelNumber, LevelType levelType)
+        {
+            return AllArtifacts
+                .Where(x => x.StartingLevel <= levelNumber && x.LevelType == levelType)
+                .ToArray();
         }
     }
 }

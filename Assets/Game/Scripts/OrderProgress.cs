@@ -63,15 +63,11 @@ namespace Game.Scripts
             if (other.TryGetComponent<Artifact>(out var artifact))
             {
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
-                // обмениваем артифакты на деньги
-                // var player = other.GetComponent<Player>();
-                CompleteOrder(new[] { artifact.Data });
+                // CompleteOrder(new[] { artifact.Data });
+
+                OrderCompleted?.Invoke(artifact.Data.BasePrice);
                 // player.Inventory.DropArtifacts();
 
-                // просчитать ценность
-                // var totalPrice = artifacts * 100;
-                // player.Inventory.AddMoney(totalPrice);
-                // artifact.de
                 Destroy(artifact.gameObject);
 
                 Debug.Log("Артифакты проданы!");
@@ -105,7 +101,7 @@ namespace Game.Scripts
 
         public bool TryComplete(IReadOnlyCollection<ArtifactData> artifacts)
         {
-            Goal -= artifacts.Sum(x => x.Value);
+            Goal -= artifacts.Sum(x => x.BasePrice);
             return Goal <= 0;
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Scripts.Artifacts;
 using UnityEngine;
@@ -18,8 +19,11 @@ namespace Game.Scripts.Levels
         [SerializeField] 
         private List<Artifact> _artifacts = new();
 
-        [field: SerializeField]
+        [field: SerializeField] 
         public int LevelNumber { get; private set; }
+
+        [field: SerializeField]
+        public LevelType LevelType { get; private set; }
         
         [field: SerializeField]
         public float OxygenConsumptionRate { get; private set; }

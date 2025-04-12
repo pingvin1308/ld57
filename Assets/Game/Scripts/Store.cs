@@ -16,10 +16,10 @@ namespace Game.Scripts
             OxygenUpgrades = new Dictionary<int, float>
             {
                 { 1, 300 },
-                { 2, 350 },
-                { 3, 300 },
-                { 4, 400 },
-                { 5, 500 },
+                { 2, 1500 },
+                { 3, 6300 }
+                // { 4, 400 },
+                // { 5, 500 },
             }
         };
 

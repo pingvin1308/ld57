@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ArtifactId>k__BackingField: 5
   <Sprite>k__BackingField: {fileID: -6223359341098357223, guid: 92adf816fc6e5fb4ba07be90d213cfd4, type: 3}
-  <Value>k__BackingField: 5
+  <BasePrice>k__BackingField: 0
   <Rarity>k__BackingField: 0
+  <Category>k__BackingField: 2
+  <LevelType>k__BackingField: 2
+  <AcquisitionMethod>k__BackingField: 0
+  <StartingLevel>k__BackingField: 4

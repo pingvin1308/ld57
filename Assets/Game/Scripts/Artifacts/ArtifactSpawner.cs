@@ -1,12 +1,17 @@
+using System;
+using System.Linq;
 using Game.Scripts.Levels;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Game.Scripts.Artifacts
 {
     public class ArtifactSpawner : MonoBehaviour
     {
-        [SerializeField] private ArtifactsDatabase _database;
+        [FormerlySerializedAs("_database")] [SerializeField]
+        private ArtifactsDatabase _artifactsDatabase;
 
         [field: SerializeField]
         public Artifact ArtifactPrefab { get; set; }
@@ -18,12 +23,12 @@ namespace Game.Scripts.Artifacts
         public Player Player { get; private set; }
 
         [field: SerializeField]
-        public LevelSettingsDatabase LevelSettingsDatabase { get; private set; } 
+        public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
 
         public Artifact SpawnArtifact(Vector3 pos, LevelBase level)
         {
             var artifact = Instantiate(ArtifactPrefab, pos, Quaternion.identity, level.transform);
-            var artifactData = GetRandomArtifactData(level.LevelNumber);
+            var artifactData = GetRandomArtifactData(level);
             artifact.Init(artifactData);
             OnArtifactSpawned?.Invoke(artifact);
             return artifact;
@@ -39,11 +44,55 @@ namespace Game.Scripts.Artifacts
             OnArtifactSpawned?.Invoke(artifact);
         }
 
-        private ArtifactData GetRandomArtifactData(int levelNumber)
+        private ArtifactData GetRandomArtifactData(LevelBase level)
         {
-            var randomArtifactId = LevelSettingsDatabase.GetRandomArtifactId(levelNumber);
-            var artifactData = _database.GetByID(randomArtifactId);
-            return artifactData;
+            Debug.Log($"Start spawning artifact on level: {level.LevelNumber}, {level.LevelType}");
+
+            var levelArtifacts = _artifactsDatabase.Get(Math.Abs(level.LevelNumber), level.LevelType);
+
+            if (level.LevelType == LevelType.Unique)
+            {
+                // генерируем один на игру
+                return levelArtifacts
+                    .Where(x => x.Rarity == ArtifactRarity.Rare)
+                    .OrderBy(_ => Random.value)
+                    .First();
+            }
+
+            var notUniqueArtifacts = levelArtifacts
+                .Where(x => x.Rarity != ArtifactRarity.Unique)
+                .ToArray();
+
+            if (notUniqueArtifacts.All(x => x.Rarity == ArtifactRarity.Common))
+            {
+                return notUniqueArtifacts
+                    .Where(x => x.Rarity == ArtifactRarity.Common)
+                    .OrderBy(_ => Random.value)
+                    .First();
+            }
+
+            if (notUniqueArtifacts.All(x => x.Rarity == ArtifactRarity.Rare))
+            {
+                return notUniqueArtifacts
+                    .Where(x => x.Rarity == ArtifactRarity.Rare)
+                    .OrderBy(_ => Random.value)
+                    .First();
+            }
+
+            // Common - 0.8
+            // Rare - 0.2
+            var rarity = Random.value > 0.8
+                ? ArtifactRarity.Rare
+                : ArtifactRarity.Common;
+
+            var randomArtifact = notUniqueArtifacts
+                .Where(x => x.Rarity == rarity)
+                .OrderBy(_ => Random.value)
+                .First();
+
+            Debug.Log($"Spawn artifact: {randomArtifact.ArtifactId}");
+
+            return randomArtifact;
         }
     }
 }

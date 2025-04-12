@@ -5812,6 +5812,8 @@ MonoBehaviour:
   <LevelGenerator>k__BackingField: {fileID: 1344478897}
   <CurrentLevel>k__BackingField: {fileID: 1407262885}
   <ExpeditionHub>k__BackingField: {fileID: 1407262885}
+  <UpLevelTrigger>k__BackingField: {fileID: 1295215934}
+  <Player>k__BackingField: {fileID: 1286833638}
 --- !u!1 &1020014666
 GameObject:
   m_ObjectHideFlags: 0
