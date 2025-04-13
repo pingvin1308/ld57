@@ -44,6 +44,13 @@ namespace Game.Scripts.Artifacts
             StartCoroutine(SetPickable());
         }
 
+        public void Hide()
+        {
+            _spriteRenderer.enabled = false;
+            IsRevealed = false;
+            _isPickable = false;
+        }
+
         private IEnumerator SetPickable()
         {
             yield return new WaitForSeconds(0.5f);

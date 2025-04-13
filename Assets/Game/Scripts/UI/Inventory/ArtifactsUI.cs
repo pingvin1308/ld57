@@ -29,7 +29,7 @@ namespace Game.Scripts.UI.Inventory
             Inventory.OnInventoryChanged.RemoveAllListeners();
         }
 
-        private void UpdateUI()
+        public void UpdateUI()
         {
             for (var index = 0; index < Inventory.MaxSize; index++)
             {

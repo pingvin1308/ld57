@@ -10,5 +10,6 @@ namespace Game.Scripts.Artifacts
         SlippyBanana = 5,
         StinkyCheese = 6,
         ShinyStone = 7,
+        Firefly = 8,
     }
 }

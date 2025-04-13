@@ -14,10 +14,13 @@ namespace Game.Scripts.Artifacts
         private ArtifactsDatabase _artifactsDatabase;
 
         [field: SerializeField]
-        public Artifact ArtifactPrefab { get; set; }
+        public Artifact ArtifactPrefab { get; private set; }
 
         [field: SerializeField]
-        public UnityEvent<Artifact> OnArtifactSpawned { get; set; }
+        public Artifact LightArtifactPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public UnityEvent<Artifact> OnArtifactSpawned { get; private set; }
 
         [field: SerializeField]
         public Player Player { get; private set; }
@@ -27,8 +30,12 @@ namespace Game.Scripts.Artifacts
 
         public Artifact SpawnArtifact(Vector3 pos, LevelBase level)
         {
-            var artifact = Instantiate(ArtifactPrefab, pos, Quaternion.identity, level.transform);
             var artifactData = GetRandomArtifactData(level);
+            var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
+                ? LightArtifactPrefab
+                : ArtifactPrefab;
+            
+            var artifact = Instantiate(artifactPrefab, pos, Quaternion.identity, level.transform);
             artifactData.SpawnedAtLevel = level.LevelNumber;
             artifact.Init(artifactData);
             OnArtifactSpawned?.Invoke(artifact);
@@ -37,8 +44,13 @@ namespace Game.Scripts.Artifacts
 
         public void DropArtifact(ArtifactData artifactData)
         {
-            var artifact = Instantiate(ArtifactPrefab, Player.transform.position, Quaternion.identity,
+            var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
+                ? LightArtifactPrefab
+                : ArtifactPrefab;
+            
+            var artifact = Instantiate(artifactPrefab, Player.transform.position, Quaternion.identity,
                 Player.CurrentLevel.transform);
+
             artifact.Init(artifactData);
             artifact.Reveal();
             Player.CurrentLevel.AddArtifacts(artifact);

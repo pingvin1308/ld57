@@ -117,7 +117,7 @@ namespace Game.Scripts
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.TryGetComponent<Artifact>(out var artifact))
+            if (other.TryGetComponent<Artifact>(out var artifact) && artifact.Data.ArtifactId != ArtifactId.GreedyCoin)
             {
                 artifact.Reveal();
             }

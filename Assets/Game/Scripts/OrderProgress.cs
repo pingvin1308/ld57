@@ -36,13 +36,15 @@ namespace Game.Scripts
 
         public void CompleteOrder(IReadOnlyCollection<ArtifactData> artifacts)
         {
-            if (CurrentOrder.TryComplete(artifacts))
+            foreach (var artifact in artifacts)
             {
-                OrderCompleted?.Invoke(CurrentOrder.Reward);
-                Progression.CompletedOrders++;  
+                var price = artifact.GetFinalPrice();
+                Debug.Log($"OrderProgress: Sold artifact {artifact.ArtifactId} for price {price}");
+                OrderCompleted?.Invoke(price);
+                Progression.CompletedOrders++;
                 CurrentOrder = Progression.GetNext();
             }
-
+            
             OrderProgressChanged?.Invoke();
         }
 
@@ -52,25 +54,6 @@ namespace Game.Scripts
             OrderChanged?.RemoveAllListeners();
             OrderProgressChanged?.RemoveAllListeners();
         }
-
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.TryGetComponent<Player>(out var player))
-            {
-                Debug.Log("Игрок подошел!");
-            }
-            
-            if (other.TryGetComponent<Artifact>(out var artifact))
-            {
-                // Здесь можно добавить звук, эффект, счетчик и т.д.
-                // CompleteOrder(new[] { artifact.Data });
-
-                OrderCompleted?.Invoke(artifact.Data.GetFinalPrice());
-                Destroy(artifact.gameObject);
-
-                Debug.Log("Артифакты проданы!");
-            }
-        }
     }
 
     public class OrderData
@@ -79,7 +62,7 @@ namespace Game.Scripts
         /// Sum of artifacts value
         /// </summary>
         public int InitialGoal { get; }
-        
+
         /// <summary>
         /// Sum of artifacts value
         /// </summary>

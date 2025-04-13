@@ -10,7 +10,6 @@ namespace Game.Scripts
 {
     public class Inventory : MonoBehaviour
     {
-        public UnityEvent<Inventory> ArtifactsUpdated;
         public UnityEvent<int> MoneyUpdated;
         public UnityEvent OnInventoryChanged;
         
@@ -63,7 +62,6 @@ namespace Game.Scripts
                 {
                     Artifacts[i] = artifact;
                         
-                    ArtifactsUpdated?.Invoke(this);
                     OnInventoryChanged?.Invoke();
                     return;
                 }

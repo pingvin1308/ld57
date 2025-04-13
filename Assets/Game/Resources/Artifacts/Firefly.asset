@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e4f9fcf784f40aba9f2b37d05bbf38d, type: 3}
-  m_Name: GreedyCoin
+  m_Name: Firefly
   m_EditorClassIdentifier: 
-  <ArtifactId>k__BackingField: 2
-  <Sprite>k__BackingField: {fileID: 7980209307439221247, guid: 92adf816fc6e5fb4ba07be90d213cfd4, type: 3}
+  <ArtifactId>k__BackingField: 8
+  <Sprite>k__BackingField: {fileID: -187395884, guid: 92adf816fc6e5fb4ba07be90d213cfd4, type: 3}
   <BasePrice>k__BackingField: 20
   <Rarity>k__BackingField: 0
-  <Type>k__BackingField: 4
+  <Type>k__BackingField: 2
   <LevelType>k__BackingField: 0
-  <AcquisitionMethod>k__BackingField: 1
+  <AcquisitionMethod>k__BackingField: 0
   <StartingLevel>k__BackingField: 4
   <SpawnedAtLevel>k__BackingField: 0

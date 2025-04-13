@@ -7,13 +7,16 @@ namespace Game.Scripts
 {
     [RequireComponent(typeof(Collider2D))]
     [RequireComponent(typeof(SpriteRenderer))]
-    public class InteractionArea : MonoBehaviour
+    public class ArtifactPlaceholderArea : MonoBehaviour
     {
         public UnityEvent PlayerEntered;
         public UnityEvent PlayerExited;
         public UnityEvent<ArtifactData> ArtifactPlaced;
 
         private SpriteRenderer _spriteRenderer;
+
+        [field: SerializeField]
+        public Player Player { get; private set; }
 
         private void Awake()
         {
@@ -22,29 +25,41 @@ namespace Game.Scripts
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.CompareTag("Player"))
+            if (other.TryGetComponent<Player>(out var player))
             {
+                Player = player;
                 PlayerEntered?.Invoke();
             }
-            
+
             if (other.TryGetComponent<Artifact>(out var artifact))
             {
-                Debug.Log("Артифакт размещен в контейнере!");
-                // Здесь можно добавить звук, эффект, счетчик и т.д.
-                // CompleteOrder(new[] { artifact.Data });
                 ArtifactPlaced?.Invoke(artifact.Data);
-                _spriteRenderer.sprite = artifact.Data.Sprite;
-                // OrderCompleted?.Invoke(artifact.Data.GetFinalPrice());
                 Destroy(artifact.gameObject);
             }
         }
-        
+
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.CompareTag("Player"))
+            if (other.TryGetComponent<Player>(out _))
             {
                 PlayerExited?.Invoke();
+                Player = null;
             }
+        }
+
+        public void UpdateUI(ArtifactData artifact)
+        {
+            _spriteRenderer.sprite = artifact?.Sprite;
+        }
+
+        public void CleanUI()
+        {
+            _spriteRenderer.sprite = null;
+        }
+
+        public void DropArtifact(ArtifactData artifact)
+        {
+            Player.Inventory.OnArtifactCollected(artifact);
         }
     }
 }
