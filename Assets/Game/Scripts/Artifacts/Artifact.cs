@@ -27,11 +27,20 @@ namespace Game.Scripts.Artifacts
         {
             Data = data;
             _spriteRenderer.sprite = data.Sprite;
-            _spriteRenderer.enabled = false;
+
+            if (Data.Type == ArtifactType.Currency)
+            {
+                Reveal();
+            }
+            else
+            {
+                _spriteRenderer.enabled = false;
+            }
         }
         
         public void Reveal()
         {
+            _spriteRenderer.enabled = true;
             StartCoroutine(SetPickable());
         }
 
@@ -39,7 +48,6 @@ namespace Game.Scripts.Artifacts
         {
             yield return new WaitForSeconds(0.5f);
             IsRevealed = true;
-            _spriteRenderer.enabled = true;
             _isPickable = true;
         }
         

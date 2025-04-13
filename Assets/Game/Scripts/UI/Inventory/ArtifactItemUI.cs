@@ -10,12 +10,13 @@ namespace Game.Scripts.UI.Inventory
     [RequireComponent(typeof(Image))]
     public class ArtifactItemUI : MonoBehaviour, IPointerClickHandler
     {
-        public UnityEvent<ArtifactData> ArtifactDroped;
+        public UnityEvent<ArtifactData, int> ArtifactDroped;
+        
+        [field: SerializeField]
+        public int Index { get; private set; }
         
         [field: SerializeField]
         public Image Image { get; private set; }
-
-        public Guid Id { get; } = Guid.NewGuid();
 
         [field: SerializeField]
         public ArtifactData Artifact { get; private set; }
@@ -25,16 +26,16 @@ namespace Game.Scripts.UI.Inventory
             Image = GetComponent<Image>();
         }
 
-        public void Init(ArtifactData artifact)
+        public void Init(ArtifactData artifact, int index)
         {
             Artifact = artifact;
             Image.sprite = artifact.Sprite;
+            Index = index;
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"Item clicked {Id}");
-            ArtifactDroped?.Invoke(Artifact);
+            ArtifactDroped?.Invoke(Artifact, Index);
             Destroy(gameObject);
         }
 

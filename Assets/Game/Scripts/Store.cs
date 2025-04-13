@@ -6,21 +6,37 @@ namespace Game.Scripts
     public class Store : MonoBehaviour
     {
         [field: SerializeField]
-        public int Price { get; private set; }
-
-        [field: SerializeField]
         public int Upgrade { get; private set; }
 
         public Upgrades Upgrades => new()
         {
-            OxygenUpgrades = new Dictionary<int, float>
+            OxygenUpgrades = new[]
             {
-                { 1, 300 },
-                { 2, 1500 },
-                { 3, 6300 }
-                // { 4, 400 },
-                // { 5, 500 },
-            }
+                (Price: 0, Value: 0),
+                (Price: 100, Value: 300),
+                (Price: 500, Value: 1500),
+                (Price: 1500, Value: 6300)
+                // ( 4, 400 ),
+                // ( 5, 500 ),
+            },
+            DetectorUpgrades = new[]
+            {
+                (Price: 0, Value: 0),
+                (Price: 1, Value: 1),
+                (Price: 2, Value: 2),
+                (Price: 3, Value: 3)
+                // ( 4, 400 ),
+                // ( 5, 500 ),
+            },
+            InventoryUpgrades = new[]
+            {
+                (Price: 0, Value: 0),
+                (Price: 1, Value: 1),
+                (Price: 2, Value: 2),
+                (Price: 3, Value: 3)
+                // ( 4, 400 ),
+                // ( 5, 500 ),
+            },
         };
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -32,13 +48,13 @@ namespace Game.Scripts
 
                 // обмениваем артифакты на деньги
                 var player = other.GetComponent<Player>();
+                var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
+                var upgrade = Upgrades.OxygenUpgrades[upgradeLevel];
 
                 // просчитать ценность
-                if (player.Inventory.SpendMoney(Price))
+                if (player.Inventory.SpendMoney(upgrade.Price))
                 {
-                    var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
-                    var upgrade = Upgrades.OxygenUpgrades[upgradeLevel];
-                    player.Oxygen.ApplyUpgrade(upgrade, upgradeLevel);
+                    player.Oxygen.ApplyUpgrade(upgrade.Value, upgradeLevel);
                     Debug.Log("Апгрейд куплен!");
                 }
                 else
@@ -55,18 +71,18 @@ namespace Game.Scripts
         /// Key: level
         /// Value: Range
         /// </summary>
-        public Dictionary<int, int> DetectorUpgrades { get; set; }
+        public (int Price, int Value)[] DetectorUpgrades { get; set; }
 
         /// <summary>
         /// Key: level
         /// Value: Volume
         /// </summary>
-        public Dictionary<int, float> OxygenUpgrades { get; set; }
+        public (int Price, int Value)[] OxygenUpgrades { get; set; }
 
         /// <summary>
         /// Key: level
         /// Value: Slot
         /// </summary>
-        public Dictionary<int, int> InventoryUpgrades { get; set; }
+        public (int Price, int Value)[] InventoryUpgrades { get; set; }
     }
 }

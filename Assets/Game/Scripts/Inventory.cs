@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using Game.Scripts.Artifacts;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,26 +14,24 @@ namespace Game.Scripts
         public UnityEvent<int> MoneyUpdated;
         public UnityEvent OnInventoryChanged;
         
-        [FormerlySerializedAs("artifactsCount")] 
-        [SerializeField] 
-        private int _artifactsCount;
-
         [FormerlySerializedAs("money")] 
         [SerializeField] 
         private int _money;
         
         [field: SerializeField]
         public ArtifactSpawner ArtifactSpawner { get; set; }
-        
-        [field: SerializeField]
-        public List<ArtifactData> CollectedArtifacts { get; private set; } = new();
 
-        public ObservableCollection<ArtifactData> Arts { get; private set; } = new();
-        
+        public IReadOnlyCollection<ArtifactData> CollectedArtifacts => Artifacts
+            .Where(x => x != null)
+            .ToArray();
+
+        [field: SerializeField]
+        public ArtifactData[] Artifacts { get; private set; } = new ArtifactData[7];
+
         [field: SerializeField]
         public int MaxSize { get; private set; }
 
-        public bool IsEnoughSpace => CollectedArtifacts.Count < MaxSize;
+        public bool IsEnoughSpace => Artifacts.Count(x => x != null) < MaxSize;
         
     
         public int Money
@@ -53,11 +51,22 @@ namespace Game.Scripts
 
         public void OnArtifactCollected(ArtifactData artifact)
         {
-            if (CollectedArtifacts.Count < MaxSize)
+            if (artifact.Type == ArtifactType.Currency)
             {
-                CollectedArtifacts.Add(artifact);
-                ArtifactsUpdated?.Invoke(this);
-                OnInventoryChanged?.Invoke();
+                AddMoney(artifact.BasePrice);
+                return;
+            }
+            
+            for (int i = 0; i < MaxSize; i++)
+            {
+                if (Artifacts[i] == null)
+                {
+                    Artifacts[i] = artifact;
+                        
+                    ArtifactsUpdated?.Invoke(this);
+                    OnInventoryChanged?.Invoke();
+                    return;
+                }
             }
         }
 
@@ -68,7 +77,11 @@ namespace Game.Scripts
 
         public void DropArtifacts()
         {
-            CollectedArtifacts.Clear();
+            for (var i = 0; i < Artifacts.Length; i++)
+            {
+                Artifacts[i] = null;
+            }
+
             OnInventoryChanged?.Invoke();
         }
 
@@ -76,7 +89,7 @@ namespace Game.Scripts
         {
             Money += money;
         }
-
+        
         public bool SpendMoney(int price)
         {
             if (Money < price)
@@ -88,10 +101,10 @@ namespace Game.Scripts
             return true;
         }
 
-        public void DropArtifact(ArtifactData artifact)
+        public void DropArtifact(ArtifactData artifact, int index)
         {
             ArtifactSpawner.DropArtifact(artifact);
-            CollectedArtifacts.Remove(artifact);
+            Artifacts[index] = null;
             OnInventoryChanged?.Invoke();
         }
     }

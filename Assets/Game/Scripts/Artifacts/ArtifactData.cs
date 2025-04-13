@@ -25,8 +25,11 @@ namespace Game.Scripts.Artifacts
 
         [field: SerializeField]
         public AcquisitionMethod AcquisitionMethod { get; private set; }
-        
+
         [field: SerializeField]
         public int StartingLevel { get; private set; }
+
+        [field: SerializeField]
+        public int SpawnedAtLevel { get; set; }
     }
 }

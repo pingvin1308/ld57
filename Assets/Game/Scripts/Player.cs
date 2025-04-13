@@ -16,6 +16,8 @@ namespace Game.Scripts
         private Rigidbody2D _rigidbody;
         private Vector2 _movement;
 
+        public UnityEvent LevelEntered;
+
         public UnityEvent PlayerDied;
 
         [field: SerializeField]
@@ -46,6 +48,7 @@ namespace Game.Scripts
         {
             CurrentLevel = level;
             OxygenConsumptionRate = level.OxygenConsumptionRate;
+            LevelEntered?.Invoke();
         }
 
         private void Awake()
@@ -56,6 +59,7 @@ namespace Game.Scripts
         private void OnDestroy()
         {
             PlayerDied?.RemoveAllListeners();
+            LevelEntered?.RemoveAllListeners();
         }
 
         private void Update()
@@ -64,7 +68,7 @@ namespace Game.Scripts
             {
                 Oxygen.Restore();
                 Inventory.DropArtifacts();
-                Inventory.SpendMoney(300);
+                Inventory.SpendMoney(Math.Min(300, Inventory.Money));
                 PlayerDied?.Invoke();
                 return;
             }
@@ -75,12 +79,21 @@ namespace Game.Scripts
             Oxygen.Use(OxygenConsumptionRate * Time.deltaTime);
 
             var speedModifier = 0;
+            var frictionModifier = 0;
+            var accelerationModifier = 0;
             var sneakers = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.Sneakers);
             speedModifier += sneakers * 2;
-
+            frictionModifier += -sneakers * 2;
+            accelerationModifier += -sneakers * 2;
+            
             var lightWeight = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.LightWeight);
             speedModifier += -lightWeight * 2;
+            frictionModifier += lightWeight * 2;
+            accelerationModifier += lightWeight * 2;
+    
             Speed.Apply(speedModifier);
+            Friction.Apply(frictionModifier);
+            Acceleration.Apply(accelerationModifier);
             
             foreach (var mirror in Inventory.CollectedArtifacts.Where(x => x.ArtifactId == ArtifactId.MovementMirror))
             {

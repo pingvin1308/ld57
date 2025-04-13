@@ -1,14 +1,11 @@
+using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 namespace Game.Scripts.UI.Inventory
 {
     public class ArtifactsUI : MonoBehaviour
     {
-        [field: SerializeField]
-        public TextMeshProUGUI ArtifactsCount { get; private set; }
-
         [field: SerializeField]
         public ArtifactItemUI ArtifactItemUIPrefab { get; private set; }
         
@@ -18,6 +15,9 @@ namespace Game.Scripts.UI.Inventory
         [field: SerializeField]
         public Scripts.Inventory Inventory { get; private set; }
 
+        [field: SerializeField]
+        public ArtifactSlotUI[] Slots { get; private set; } = Array.Empty<ArtifactSlotUI>();
+        
         private void OnEnable()
         {
             Inventory.OnInventoryChanged.AddListener(UpdateUI);
@@ -31,20 +31,25 @@ namespace Game.Scripts.UI.Inventory
 
         private void UpdateUI()
         {
-            foreach (var artifact in Artifacts)
+            for (var index = 0; index < Inventory.MaxSize; index++)
             {
-                Destroy(artifact.gameObject);
-            }
-            Artifacts.Clear();
-            
-            foreach (var artifact in Inventory.CollectedArtifacts)
-            {
-                var artifactGameObject = Instantiate(ArtifactItemUIPrefab, transform);
-                artifactGameObject.Init(artifact);
+                var artifact = Inventory.Artifacts[index];
+                if (artifact == null)
+                {
+                    Slots[index].Unset();
+                    continue;
+                }
+
+                if (Slots[index].Item != null)
+                {
+                    continue;
+                }
+                
+                var artifactGameObject = Instantiate(ArtifactItemUIPrefab, Slots[index].transform);
+                Slots[index].Set(artifactGameObject);
+                artifactGameObject.Init(artifact, index);
                 artifactGameObject.ArtifactDroped.AddListener(Inventory.DropArtifact);
-                Artifacts.Add(artifactGameObject);
-                ArtifactsCount.text = Artifacts.Count.ToString();
-            }            
+            }
         }
     }
 }

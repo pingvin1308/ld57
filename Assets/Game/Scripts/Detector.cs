@@ -92,6 +92,7 @@ namespace Game.Scripts
         {
             NearestArtifact = artifacts
                 .Where(x => x != null)
+                .Where(x => x.Data.Type != ArtifactType.Currency)
                 .Select(x => new
                 {
                     Distance = Vector3.Distance(transform.position, x.transform.position),

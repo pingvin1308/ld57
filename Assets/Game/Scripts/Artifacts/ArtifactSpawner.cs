@@ -29,6 +29,7 @@ namespace Game.Scripts.Artifacts
         {
             var artifact = Instantiate(ArtifactPrefab, pos, Quaternion.identity, level.transform);
             var artifactData = GetRandomArtifactData(level);
+            artifactData.SpawnedAtLevel = level.LevelNumber;
             artifact.Init(artifactData);
             OnArtifactSpawned?.Invoke(artifact);
             return artifact;
@@ -92,7 +93,7 @@ namespace Game.Scripts.Artifacts
 
             Debug.Log($"Spawn artifact: {randomArtifact.ArtifactId}");
 
-            return randomArtifact;
+            return Instantiate(randomArtifact);            
         }
     }
 }

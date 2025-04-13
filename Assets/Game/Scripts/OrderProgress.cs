@@ -65,9 +65,7 @@ namespace Game.Scripts
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
                 // CompleteOrder(new[] { artifact.Data });
 
-                OrderCompleted?.Invoke(artifact.Data.BasePrice);
-                // player.Inventory.DropArtifacts();
-
+                OrderCompleted?.Invoke(artifact.Data.GetFinalPrice());
                 Destroy(artifact.gameObject);
 
                 Debug.Log("Артифакты проданы!");

@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: inventory
     originalName: 
-    pivot: {x: 0.4972973, y: -0.23076925}
+    pivot: {x: 0.5, y: -0.11538462}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,8 +133,8 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 185
-      height: 65
+      width: 58
+      height: 26
     spriteID: 3f474d6156c5b3e4b853f2dc70e95da0
     spriteBone: []
     spriteOutline: []
@@ -158,9 +158,9 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 3
-        y: 15
-        width: 185
-        height: 65
+        y: 3
+        width: 58
+        height: 26
       spriteId: 3f474d6156c5b3e4b853f2dc70e95da0
     linkedCells: []
     parentIndex: -1
@@ -180,5 +180,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 190, y: 92}
-  previousTextureSize: {x: 256, y: 128}
+  canvasSize: {x: 64, y: 32}
+  previousTextureSize: {x: 128, y: 64}
