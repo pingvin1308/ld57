@@ -203,7 +203,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_3
+      name: balloon_0
       rect:
         serializedVersion: 2
         x: 2
@@ -225,7 +225,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_4
+      name: balloon_1
       rect:
         serializedVersion: 2
         x: 18
@@ -247,7 +247,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_5
+      name: balloon_2
       rect:
         serializedVersion: 2
         x: 34
@@ -269,7 +269,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_6
+      name: balloon_3
       rect:
         serializedVersion: 2
         x: 50
@@ -291,7 +291,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_7
+      name: balloon_4
       rect:
         serializedVersion: 2
         x: 66
@@ -313,7 +313,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: oxygen_panel-Sheet_8
+      name: balloon_5
       rect:
         serializedVersion: 2
         x: 82
@@ -348,15 +348,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      balloon_0: -2764262347409015952
+      balloon_1: -7146266924002128107
+      balloon_2: -5391690144086086244
+      balloon_3: 6268373672619253304
+      balloon_4: 8728705936436095612
+      balloon_5: -4266699288850221656
       oxygen_panel-Sheet_0: 9117855806256041590
       oxygen_panel-Sheet_1: 1909463252643211114
       oxygen_panel-Sheet_2: -4563214510676727673
-      oxygen_panel-Sheet_3: -2764262347409015952
-      oxygen_panel-Sheet_4: -7146266924002128107
-      oxygen_panel-Sheet_5: -5391690144086086244
-      oxygen_panel-Sheet_6: 6268373672619253304
-      oxygen_panel-Sheet_7: 8728705936436095612
-      oxygen_panel-Sheet_8: -4266699288850221656
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

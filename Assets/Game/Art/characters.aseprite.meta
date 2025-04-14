@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a04142a48835a56419e834772150e9cf
+guid: 185f64f61f04fe747856a08d25b2c8d3
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,9 +123,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: inventory
+  - name: characters
     originalName: 
-    pivot: {x: 0.5, y: -0.11538462}
+    pivot: {x: 0.47058827, y: 0}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,9 +133,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 90
-      height: 26
-    spriteID: 3f474d6156c5b3e4b853f2dc70e95da0
+      width: 51
+      height: 53
+    spriteID: 99d946103065caa49832a61c66b99ed7
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -147,21 +147,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 15320842
-    name: inventory
+    guid: 715871602
+    name: characters
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: inventory
+    - name: characters
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 3
-        y: 3
-        width: 90
-        height: 26
-      spriteId: 3f474d6156c5b3e4b853f2dc70e95da0
+        x: 8
+        y: 0
+        width: 51
+        height: 53
+      spriteId: 99d946103065caa49832a61c66b99ed7
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -180,5 +180,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 96, y: 32}
-  previousTextureSize: {x: 128, y: 64}
+  canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 64, y: 64}

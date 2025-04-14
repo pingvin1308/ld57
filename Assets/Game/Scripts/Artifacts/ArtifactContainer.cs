@@ -84,7 +84,7 @@ namespace Game.Scripts
             _inventoryUI.Canvas.sortingOrder = sortingOrder;
             _inventoryUI.Canvas.GetComponent<RectTransform>().localScale = worldUiScale;
             var targetWorldPos = transform.position + artifactContainerOffset;
-            yield return _inventoryUI.transform.DOMove(targetWorldPos, 0.5f);
+            yield return _inventoryUI.transform.DOMove(targetWorldPos, 0.5f).WaitForCompletion();
 
             _isMoving = false;
         }

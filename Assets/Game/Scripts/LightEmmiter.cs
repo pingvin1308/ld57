@@ -6,6 +6,7 @@ namespace Game.Scripts
 {
     [RequireComponent(typeof(Light2D))]
     [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(Rigidbody2D))]
     public class LightEmitter : MonoBehaviour
     {
         private void OnTriggerEnter2D(Collider2D other)
