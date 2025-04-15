@@ -59,13 +59,10 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
 
-        private void Start()
-        {
-            Random.InitState(Random.Range(0, int.MinValue));
-        }
-
         public LevelBase Generate(int nextLevelNumber)
         {
+            Random.InitState(Random.Range(0, int.MinValue));
+
             var levelSettings = LevelSettingsDatabase.LevelSettings
                 .FirstOrDefault(x => x.LevelNumber == Math.Abs(nextLevelNumber));
             
@@ -74,7 +71,7 @@ namespace Game.Scripts.Levels
                 levelNumber: nextLevelNumber,
                 oxygenConsumptionRate: levelSettings?.OxygenConsumptionRate ?? 10
             );
-
+            
             var rooms = GenerateFloor(levelGameObject.FloorTilemap);
             GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
             var artifacts = GenerateArtifacts(levelGameObject, rooms);

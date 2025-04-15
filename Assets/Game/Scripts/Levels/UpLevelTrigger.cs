@@ -5,6 +5,8 @@ namespace Game.Scripts.Levels
 {
     public class UpLevelTrigger : MonoBehaviour
     {
+        private const int ExpeditionHub = 0;
+
         public UnityEvent<LevelDirection> LevelChanged;
 
         [field: SerializeField]
@@ -15,14 +17,11 @@ namespace Game.Scripts.Levels
             if (other.CompareTag("Player"))
             {
                 var player = other.GetComponent<Player>();
-                if (player.CurrentLevel is ExpeditionHub)
+                if (player.CurrentLevel == ExpeditionHub)
                 {
-                    // player.transform.position 
-                    Debug.Log("test");
                     return;
                 }
 
-                // Здесь можно добавить звук, эффект, счетчик и т.д.
                 Debug.Log("Зашел на левел выше");
                 LevelChanged?.Invoke(LevelDirection.Up);
                 player.transform.position = DownLevelTrigger.transform.position + new Vector3(0, 1);

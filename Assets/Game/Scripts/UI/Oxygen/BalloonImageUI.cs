@@ -19,5 +19,15 @@ namespace Game.Scripts
         {
             _image.sprite = _images[index];
         }
+
+        public void Warning()
+        {
+            _image.color = Color.red;
+        }
+
+        public void Ok()
+        {
+            _image.color = Color.cyan;            
+        }
     }
 }

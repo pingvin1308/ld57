@@ -1,29 +1,30 @@
-using System.Collections;
-using DG.Tweening;
 using Game.Scripts.UI;
+using Game.Scripts.UI.Inventory;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game.Scripts
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class OxygenUpgrader : MonoBehaviour
+    public class DetectorUpgrader : MonoBehaviour
     {
         private bool _isMoving;
         [SerializeField] private InteractionArea _interactionArea;
-        [SerializeField] private OxygenCanvasUI _oxygenCanvasUI;
-        [SerializeField] private UIWorldFollower _oxygenUI;
+        [SerializeField] private DetectorCanvasUI _detectorCanvasUI;
+        [SerializeField] private UIWorldFollower _detectorUI;
         [SerializeField] private Button _buyUpgradeButton;
+        [SerializeField] private Vector3 _worldOffest;
+
         private SpriteRenderer _spriteRenderer;
 
-        public (int Price, int Value)[] OxygenUpgrades => new[]
+        public (int Price, int Value)[] DetectorUpgrades => new[]
         {
             (Price: 0, Value: 0),
-            (Price: 100, Value: 300),
-            (Price: 500, Value: 1500),
-            (Price: 1500, Value: 6300)
+            (Price: 10, Value: 1),
+            (Price: 100, Value: 2),
+            (Price: 300, Value: 3),
         };
-        
+
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -42,14 +43,14 @@ namespace Game.Scripts
             var player = _interactionArea.Player;
 
             var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
-            if (OxygenUpgrades.Length == upgradeLevel) return;
+            if (DetectorUpgrades.Length == upgradeLevel) return;
 
-            var upgrade = OxygenUpgrades[upgradeLevel];
+            var upgrade = DetectorUpgrades[upgradeLevel];
 
             if (player.Inventory.SpendMoney(upgrade.Price))
             {
                 player.Oxygen.ApplyUpgrade(upgrade.Value, upgradeLevel);
-                _oxygenCanvasUI.OxygenUI.BalloonImage.SetUpgradeLevel(upgradeLevel);
+                // _inventoryCanvasUI..SetUpgradeLevel(upgradeLevel);
                 Debug.Log("Апгрейд куплен!");
             }
             else
@@ -64,46 +65,19 @@ namespace Game.Scripts
             _interactionArea.PlayerExited.RemoveListener(OnPlayerExited);
             _buyUpgradeButton.onClick.RemoveListener(OnBuyPressed);
         }
-        
+
         private void OnPlayerEntered()
         {
             Debug.Log("ArtifactContainer: Player entered");
             _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
-            _oxygenUI.StartFollowing(transform.position);
+            _detectorUI.StartFollowing(transform.position + _worldOffest);
         }
 
         private void OnPlayerExited()
         {
             Debug.Log("ArtifactContainer: Player exited");
             _spriteRenderer.material.SetFloat("_Thickness", 0);
-            _oxygenUI.StopFollowing();
-        }
-
-        private IEnumerator MoveToContainer()
-        {
-            var artifactContainerOffset = new Vector3(-1.8f, 3.3f, 0);
-            var worldUiScale = Vector3.one * 0.01f;
-            var sortingOrder = 10;
-            var canvasPlaneDistance = 5.0f;
-
-            var screenPos = _oxygenCanvasUI.Canvas.transform.position;
-            var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, canvasPlaneDistance));
-
-            _oxygenCanvasUI.Canvas.transform.position = worldPos;
-            _oxygenCanvasUI.Canvas.renderMode = RenderMode.WorldSpace;
-            _oxygenCanvasUI.Canvas.worldCamera = Camera.main;
-            _oxygenCanvasUI.Canvas.sortingOrder = sortingOrder;
-            _oxygenCanvasUI.Canvas.GetComponent<RectTransform>().localScale = worldUiScale;
-
-            var targetWorldPos = transform.position + artifactContainerOffset;
-            yield return _oxygenCanvasUI.OxygenUI.transform.DOLocalMove(targetWorldPos, 0.5f).WaitForCompletion();
-        }
-
-        private IEnumerator MoveBack()
-        {
-            _oxygenCanvasUI.Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _oxygenCanvasUI.OxygenUI.ResetPosition();
-            yield return null;
+            _detectorUI.StopFollowing();
         }
     }
 }

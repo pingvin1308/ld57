@@ -28,11 +28,32 @@ namespace Game.Scripts
         }
 
         [field: SerializeField]
+        public FloatAttribute DangerVolumePercent { get; private set; }
+        
+        [field: SerializeField]
         public FloatAttribute MaxVolume { get; private set; }
 
+        [field: SerializeField]
+        [Range(0, 100)]
+        public int RestoreRatePercent { get; private set; }
+        
+        public bool HasLowVolume { get; private set; }
+        
         public void Use(float amount)
         {
+            var currentPercentage = Volume / MaxVolume.Current;
+            HasLowVolume = currentPercentage <= DangerVolumePercent.Current;
+            if (HasLowVolume)
+            {
+                amount /= 2f;
+            }
+
             Volume -= amount;
+        }
+        
+        public void Restore(float amount)
+        {
+            Volume += amount;
         }
 
         public void ApplyUpgrade(float upgrade, int upgradeLevel)

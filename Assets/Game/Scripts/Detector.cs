@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Game.Scripts.Artifacts;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace Game.Scripts
 {
@@ -11,28 +7,15 @@ namespace Game.Scripts
     [RequireComponent(typeof(Collider2D))]
     public class Detector : MonoBehaviour
     {
-        public UnityEvent DistanceChanged;
-        public UnityEvent ArtifactsDetected;
-        [SerializeField] private float distanceToNearestArtifact;
-
-        [FormerlySerializedAs("artifactDetected")] [SerializeField]
-        private bool _artifactDetected;
 
         private SpriteRenderer _spriteRenderer;
         private Collider2D _collider2D;
 
         [field: SerializeField]
+        public ScanArea ScanArea { get; private set; }
+
+        [field: SerializeField]
         public bool RevealingMode { get; private set; }
-        
-        public bool ArtifactDetected
-        {
-            get => _artifactDetected;
-            private set
-            {
-                _artifactDetected = value;
-                ArtifactsDetected?.Invoke();
-            }
-        }
 
         [field: SerializeField]
         public Artifact NearestArtifact { get; private set; }
@@ -43,19 +26,7 @@ namespace Game.Scripts
         [field: SerializeField]
         public float RevealingRange { get; private set; }
         
-        public float DistanceToNearestArtifact
-        {
-            get => distanceToNearestArtifact;
-            private set
-            {
-                if (!Mathf.Approximately(distanceToNearestArtifact, value))
-                {
-                    DistanceChanged?.Invoke();
-                }
 
-                distanceToNearestArtifact = value;
-            }
-        }
 
         private void Awake()
         {
@@ -87,34 +58,7 @@ namespace Game.Scripts
                 transform.position = transform.parent.position;
             }
         }
-
-        public void Scan(IReadOnlyCollection<Artifact> artifacts)
-        {
-            NearestArtifact = artifacts
-                .Where(x => x != null)
-                .Where(x => x.Data.Type != ArtifactType.Currency)
-                .Select(x => new
-                {
-                    Distance = Vector3.Distance(transform.position, x.transform.position),
-                    Artifact = x
-                })
-                .Where(x => x.Distance < Range)
-                .OrderBy(x => x.Distance)
-                .FirstOrDefault()
-                ?.Artifact;
-
-            if (NearestArtifact != null)
-            {
-                DistanceToNearestArtifact = Vector3.Distance(transform.position, NearestArtifact.transform.position);
-                ArtifactDetected = true;
-            }
-            else
-            {
-                DistanceToNearestArtifact = 0;
-                ArtifactDetected = false;
-            }
-        }
-
+     
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.TryGetComponent<Artifact>(out var artifact) && artifact.Data.ArtifactId != ArtifactId.GreedyCoin)
@@ -125,8 +69,6 @@ namespace Game.Scripts
 
         private void OnDestroy()
         {
-            DistanceChanged?.RemoveAllListeners();
-            ArtifactsDetected?.RemoveAllListeners();
         }
     }
 }

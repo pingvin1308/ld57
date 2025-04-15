@@ -24,7 +24,7 @@ namespace Game.Scripts.Levels
         
         private void Awake()
         {
-            CurrentLevel.Enable();
+            CurrentLevel.Enable(Player);
         }
 
         public void BackToHub()
@@ -38,7 +38,7 @@ namespace Game.Scripts.Levels
             Player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -3);
 
             CurrentLevel = ExpeditionHub;
-            CurrentLevel.Enable();
+            CurrentLevel.Enable(Player);
             _levelCache.Clear();
         }
 
@@ -57,7 +57,7 @@ namespace Game.Scripts.Levels
             
             CurrentLevel.Disable();
             CurrentLevel = nextLevel;
-            CurrentLevel.Enable();
+            CurrentLevel.Enable(Player);
         }
 
         private LevelBase GetNextLevel(LevelDirection direction)

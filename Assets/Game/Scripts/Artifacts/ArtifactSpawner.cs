@@ -10,6 +10,9 @@ namespace Game.Scripts.Artifacts
 {
     public class ArtifactSpawner : MonoBehaviour
     {
+        [field: SerializeField]
+        public UnityEvent<Artifact> OnArtifactSpawned { get; private set; }
+
         [FormerlySerializedAs("_database")] [SerializeField]
         private ArtifactsDatabase _artifactsDatabase;
 
@@ -18,9 +21,6 @@ namespace Game.Scripts.Artifacts
 
         [field: SerializeField]
         public Artifact LightArtifactPrefab { get; private set; }
-        
-        [field: SerializeField]
-        public UnityEvent<Artifact> OnArtifactSpawned { get; private set; }
 
         [field: SerializeField]
         public Player Player { get; private set; }
@@ -28,6 +28,9 @@ namespace Game.Scripts.Artifacts
         [field: SerializeField]
         public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
 
+        [field: SerializeField]
+        public LevelSwitcher LevelSwitcher { get; private set; }
+        
         public Artifact SpawnArtifact(Vector3 pos, LevelBase level)
         {
             var artifactData = GetRandomArtifactData(level);
@@ -49,11 +52,11 @@ namespace Game.Scripts.Artifacts
                 : ArtifactPrefab;
             
             var artifact = Instantiate(artifactPrefab, Player.transform.position, Quaternion.identity,
-                Player.CurrentLevel.transform);
-
+                LevelSwitcher.CurrentLevel.transform);
+            
             artifact.Init(artifactData);
             artifact.Reveal();
-            Player.CurrentLevel.AddArtifacts(artifact);
+            LevelSwitcher.CurrentLevel.AddArtifacts(artifact);
             OnArtifactSpawned?.Invoke(artifact);
         }
 
@@ -92,8 +95,6 @@ namespace Game.Scripts.Artifacts
                     .First();
             }
 
-            // Common - 0.8
-            // Rare - 0.2
             var rarity = Random.value > 0.8
                 ? ArtifactRarity.Rare
                 : ArtifactRarity.Common;

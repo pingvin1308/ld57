@@ -23,7 +23,7 @@ namespace Game.Scripts.UI
 
         private void OnLevelEntered()
         {
-            Value.text = Player.CurrentLevel.LevelNumber.ToString();
+            Value.text = Player.CurrentLevel.ToString();
         }
     }
 }

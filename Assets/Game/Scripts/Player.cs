@@ -23,6 +23,9 @@ namespace Game.Scripts
         public UnityEvent PlayerDied;
 
         [field: SerializeField]
+        public int CurrentLevel { get; private set; }
+        
+        [field: SerializeField]
         public LightEmitter LightEmitter { get; private set; }
         
         [field: SerializeField]
@@ -34,8 +37,8 @@ namespace Game.Scripts
         [field: SerializeField]
         public FloatAttribute Friction { get; private set; }
 
-        [field: SerializeField]
-        public LevelBase CurrentLevel { get; private set; }
+        // [field: SerializeField]
+        // public LevelBase CurrentLevel { get; private set; }
 
         [field: SerializeField]
         public Inventory Inventory { get; private set; }
@@ -51,7 +54,7 @@ namespace Game.Scripts
 
         public void OnLevelEnabled(LevelBase level)
         {
-            CurrentLevel = level;
+            CurrentLevel = level.LevelNumber;
             OxygenConsumptionRate = level.OxygenConsumptionRate;
             LevelEntered?.Invoke();
         }
@@ -85,6 +88,11 @@ namespace Game.Scripts
             var inputDirection = new Vector2(moveX, moveY).normalized;
             Oxygen.Use(OxygenConsumptionRate * Time.deltaTime);
 
+            // if (CurrentLevel is ExpeditionHub)
+            // {
+            //     Oxygen.Use(rate * Time.deltaTime);
+            // }
+            
             //todo: Вынести расчет эффектов в обработчик эвента обновления инвентаря.
             //Таким образом не будем рассчитывать эффекты в Update
             var speedModifier = 0;
@@ -121,8 +129,6 @@ namespace Game.Scripts
                 LightEmitter.gameObject.SetActive(false);
                 _shadowCaster2d.enabled = true;
             }
-
-            Detector?.Scan(CurrentLevel?.Artifacts ?? ArraySegment<Artifact>.Empty);
         }
 
         private Vector2 GetMovement(Vector2 inputDirection)

@@ -12,19 +12,19 @@ namespace Game.Scripts.UI
 
         private void OnEnable()
         {
-            Detector.DistanceChanged.AddListener(OnDistanceChanged);
-            Detector.ArtifactsDetected.AddListener(OnArtifactsDetected);
+            Detector.ScanArea.DistanceChanged.AddListener(OnDistanceChanged);
+            Detector.ScanArea.ArtifactsDetected.AddListener(OnArtifactsDetected);
         }
 
         private void OnDisable()
         {
-            Detector.DistanceChanged.RemoveListener(OnDistanceChanged);
-            Detector.ArtifactsDetected.RemoveListener(OnArtifactsDetected);
+            Detector.ScanArea.DistanceChanged.RemoveListener(OnDistanceChanged);
+            Detector.ScanArea.ArtifactsDetected.RemoveListener(OnArtifactsDetected);
         }
 
         private void OnArtifactsDetected()
         {
-            if (!Detector.ArtifactDetected)
+            if (!Detector.ScanArea.ArtifactDetected)
             {
                 SignalUI.SetValue(0);
             }
@@ -32,13 +32,13 @@ namespace Game.Scripts.UI
 
         private void OnDistanceChanged()
         {
-            if (!Detector.ArtifactDetected)
+            if (!Detector.ScanArea.ArtifactDetected)
             {
                 return;
             }
 
             var scale = SignalUI.MaxValue / Detector.Range;
-            var scaledValue = Mathf.Floor(Detector.DistanceToNearestArtifact) * scale;
+            var scaledValue = Mathf.Floor(Detector.ScanArea.DistanceToNearestArtifact) * scale;
             var signalValue = SignalUI.MaxValue - Mathf.Clamp(scaledValue, SignalUI.MinValue, SignalUI.MaxValue);
             SignalUI.SetValue((int)signalValue);
         }

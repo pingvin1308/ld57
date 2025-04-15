@@ -24,13 +24,14 @@ namespace Game.Scripts
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            Debug.Log(other.name);
             if (other.TryGetComponent<Player>(out var player))
             {
                 Player = player;
                 PlayerEntered?.Invoke();
             }
-
-            if (other.TryGetComponent<Artifact>(out var artifact))
+            
+            if (other.gameObject.TryGetComponent<Artifact>(out var artifact))
             {
                 ArtifactPlaced?.Invoke(artifact.Data);
                 Destroy(artifact.gameObject);
