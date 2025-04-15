@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Game.Scripts.Artifacts;
 using Game.Scripts.Levels;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
@@ -12,12 +11,14 @@ namespace Game.Scripts
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(ShadowCaster2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public class Player : MonoBehaviour
     {
         private float _oxygenTimer;
         private Vector2 _movement;
         private Rigidbody2D _rigidbody;
         private ShadowCaster2D _shadowCaster2d;
+        private SpriteRenderer _spriteRenderer;
 
         public UnityEvent LevelEntered;
         public UnityEvent PlayerDied;
@@ -61,6 +62,7 @@ namespace Game.Scripts
 
         private void Awake()
         {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
             _rigidbody = GetComponent<Rigidbody2D>();
             _shadowCaster2d = GetComponent<ShadowCaster2D>();
             _shadowCaster2d.enabled = true;
@@ -88,11 +90,6 @@ namespace Game.Scripts
             var inputDirection = new Vector2(moveX, moveY).normalized;
             Oxygen.Use(OxygenConsumptionRate * Time.deltaTime);
 
-            // if (CurrentLevel is ExpeditionHub)
-            // {
-            //     Oxygen.Use(rate * Time.deltaTime);
-            // }
-            
             //todo: Вынести расчет эффектов в обработчик эвента обновления инвентаря.
             //Таким образом не будем рассчитывать эффекты в Update
             var speedModifier = 0;
@@ -112,13 +109,16 @@ namespace Game.Scripts
             Friction.Apply(frictionModifier);
             Acceleration.Apply(accelerationModifier);
 
-            foreach (var mirror in Inventory.CollectedArtifacts.Where(x => x.ArtifactId == ArtifactId.MovementMirror))
+            var mirrorCount = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.MovementMirror);
+            var isMirrored = mirrorCount % 2 != 0;
+            if (isMirrored)
             {
                 inputDirection = -inputDirection;
             }
 
             _movement = GetMovement(inputDirection);
-
+            _spriteRenderer.flipX = (_movement.x < 0) ^ isMirrored;
+            
             if (Inventory.CollectedArtifacts.Any(x => x.ArtifactId == ArtifactId.Firefly))
             {
                 LightEmitter.gameObject.SetActive(true);
@@ -144,34 +144,6 @@ namespace Game.Scripts
         private void FixedUpdate()
         {
             _rigidbody.linearVelocity = _movement;
-        }
-    }
-
-    [Serializable]
-    [InlineProperty]
-    public class FloatAttribute : Attribute<float>
-    {
-        public float Current => BaseValue + Modifier;
-    }
-
-    [Serializable]
-    [InlineProperty]
-    public class Attribute<TValue>
-    {
-        [field: SerializeField]
-        public TValue BaseValue { get; private set; }
-
-        [field: SerializeField]
-        public TValue Modifier { get; private set; }
-
-        public void Reset()
-        {
-            Modifier = default;
-        }
-
-        public void Apply(TValue modified)
-        {
-            Modifier = modified;
         }
     }
 }

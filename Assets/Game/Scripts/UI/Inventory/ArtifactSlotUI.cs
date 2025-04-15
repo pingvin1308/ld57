@@ -3,10 +3,13 @@ using UnityEngine.UI;
 
 namespace Game.Scripts.UI.Inventory
 {
+    [RequireComponent(typeof(Image))]
     public class ArtifactSlotUI : MonoBehaviour
     {
-        private Image _slotImage;
-        
+        [SerializeField] private Sprite _closedSlot;
+        [SerializeField] private Sprite _openedSlot;
+        [SerializeField] private Image _slotImage;
+
         [field: SerializeField]
         public ArtifactItemUI Item { get; private set; }
 
@@ -26,6 +29,16 @@ namespace Game.Scripts.UI.Inventory
             {
                 Destroy(Item.gameObject);
             }
+        }
+
+        public void Unlock()
+        {
+            _slotImage.sprite = _openedSlot;
+        }
+
+        public void Lock()
+        {
+            _slotImage.sprite = _closedSlot;
         }
     }
 }

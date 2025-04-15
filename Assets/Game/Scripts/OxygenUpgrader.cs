@@ -27,6 +27,7 @@ namespace Game.Scripts
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
 
         private void OnEnable()
@@ -70,6 +71,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player entered");
             _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
             _oxygenUI.StartFollowing(transform.position);
+            _buyUpgradeButton.gameObject.SetActive(true);
         }
 
         private void OnPlayerExited()
@@ -77,33 +79,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player exited");
             _spriteRenderer.material.SetFloat("_Thickness", 0);
             _oxygenUI.StopFollowing();
-        }
-
-        private IEnumerator MoveToContainer()
-        {
-            var artifactContainerOffset = new Vector3(-1.8f, 3.3f, 0);
-            var worldUiScale = Vector3.one * 0.01f;
-            var sortingOrder = 10;
-            var canvasPlaneDistance = 5.0f;
-
-            var screenPos = _oxygenCanvasUI.Canvas.transform.position;
-            var worldPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, canvasPlaneDistance));
-
-            _oxygenCanvasUI.Canvas.transform.position = worldPos;
-            _oxygenCanvasUI.Canvas.renderMode = RenderMode.WorldSpace;
-            _oxygenCanvasUI.Canvas.worldCamera = Camera.main;
-            _oxygenCanvasUI.Canvas.sortingOrder = sortingOrder;
-            _oxygenCanvasUI.Canvas.GetComponent<RectTransform>().localScale = worldUiScale;
-
-            var targetWorldPos = transform.position + artifactContainerOffset;
-            yield return _oxygenCanvasUI.OxygenUI.transform.DOLocalMove(targetWorldPos, 0.5f).WaitForCompletion();
-        }
-
-        private IEnumerator MoveBack()
-        {
-            _oxygenCanvasUI.Canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _oxygenCanvasUI.OxygenUI.ResetPosition();
-            yield return null;
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
     }
 }

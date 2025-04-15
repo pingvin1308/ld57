@@ -7,7 +7,6 @@ namespace Game.Scripts
     [RequireComponent(typeof(Collider2D))]
     public class Detector : MonoBehaviour
     {
-
         private SpriteRenderer _spriteRenderer;
         private Collider2D _collider2D;
 
@@ -18,15 +17,10 @@ namespace Game.Scripts
         public bool RevealingMode { get; private set; }
 
         [field: SerializeField]
-        public Artifact NearestArtifact { get; private set; }
-
-        [field: SerializeField]
         public float Range { get; private set; }
 
         [field: SerializeField]
         public float RevealingRange { get; private set; }
-        
-
 
         private void Awake()
         {
@@ -44,7 +38,7 @@ namespace Game.Scripts
                 _spriteRenderer.enabled = RevealingMode;
                 _collider2D.enabled = RevealingMode;
             }
-            
+
             if (RevealingMode)
             {
                 var mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -58,17 +52,13 @@ namespace Game.Scripts
                 transform.position = transform.parent.position;
             }
         }
-     
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.TryGetComponent<Artifact>(out var artifact) && artifact.Data.ArtifactId != ArtifactId.GreedyCoin)
             {
                 artifact.Reveal();
             }
-        }
-
-        private void OnDestroy()
-        {
         }
     }
 }

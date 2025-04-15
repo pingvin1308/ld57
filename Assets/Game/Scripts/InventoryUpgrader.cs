@@ -31,6 +31,7 @@ namespace Game.Scripts
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
 
         private void OnEnable()
@@ -45,15 +46,15 @@ namespace Game.Scripts
             if (_interactionArea.Player == null) return;
             var player = _interactionArea.Player;
 
-            var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
+            var upgradeLevel = player.Inventory.UpgradeLevel + 1;
             if (InventoryUpgrades.Length == upgradeLevel) return;
 
             var upgrade = InventoryUpgrades[upgradeLevel];
 
             if (player.Inventory.SpendMoney(upgrade.Price))
             {
-                player.Oxygen.ApplyUpgrade(upgrade.Value, upgradeLevel);
-                _inventoryCanvasUI.ArtifactsUI.SetUpgradeLevel(upgradeLevel);
+                player.Inventory.ApplyUpgrade(upgrade.Value, upgradeLevel);
+                _inventoryCanvasUI.ArtifactsUI.SetUpgradeLevel();
                 Debug.Log("Апгрейд куплен!");
             }
             else
@@ -74,6 +75,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player entered");
             _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
             _inventoryUI.StartFollowing(transform.position + _worldOffest);
+            _buyUpgradeButton.gameObject.SetActive(true);
         }
 
         private void OnPlayerExited()
@@ -81,6 +83,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player exited");
             _spriteRenderer.material.SetFloat("_Thickness", 0);
             _inventoryUI.StopFollowing();
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
     }
 }

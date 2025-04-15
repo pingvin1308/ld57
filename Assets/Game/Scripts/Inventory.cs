@@ -28,9 +28,12 @@ namespace Game.Scripts
         public ArtifactData[] Artifacts { get; private set; } = new ArtifactData[7];
 
         [field: SerializeField]
-        public int MaxSize { get; private set; }
+        public IntAttribute MaxSize { get; private set; }
 
-        public bool IsEnoughSpace => Artifacts.Count(x => x != null) < MaxSize;
+        [field: SerializeField]
+        public int UpgradeLevel { get; private set; }
+
+        public bool IsEnoughSpace => Artifacts.Count(x => x != null) < MaxSize.Current;
         
     
         public int Money
@@ -42,10 +45,11 @@ namespace Game.Scripts
                 MoneyUpdated?.Invoke(_money);
             }
         }
-
+        
         private void Awake()
         {
             Money = 0;
+            OnInventoryChanged?.Invoke();
         }
 
         public void OnArtifactCollected(ArtifactData artifact)
@@ -56,7 +60,7 @@ namespace Game.Scripts
                 return;
             }
             
-            for (int i = 0; i < MaxSize; i++)
+            for (int i = 0; i < MaxSize.Current; i++)
             {
                 if (Artifacts[i] == null)
                 {
@@ -104,6 +108,12 @@ namespace Game.Scripts
             ArtifactSpawner.DropArtifact(artifact);
             Artifacts[index] = null;
             OnInventoryChanged?.Invoke();
+        }
+
+        public void ApplyUpgrade(int upgrade, int upgradeLevel)
+        {
+            UpgradeLevel = upgradeLevel;
+            MaxSize.Apply(upgrade);
         }
     }
 }

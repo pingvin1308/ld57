@@ -28,15 +28,9 @@ namespace Game.Scripts.UI.Inventory
             _startAnchoredPosition = _rectTransform.anchoredPosition3D;
         }
 
-        public void ResetPosition()
-        {
-            _rectTransform.anchoredPosition = _startAnchoredPosition;
-        }
-
         private void OnEnable()
         {
             Inventory.OnInventoryChanged.AddListener(UpdateUI);
-            UpdateUI();
         }
 
         private void OnDisable()
@@ -46,7 +40,17 @@ namespace Game.Scripts.UI.Inventory
 
         public void UpdateUI()
         {
-            for (var index = 0; index < Inventory.MaxSize; index++)
+            foreach (var slot in Slots)
+            {
+                slot.Lock();
+            }
+
+            for (var i = 0; i < Inventory.MaxSize.Current; i++)
+            {
+                Slots[i].Unlock();
+            }
+
+            for (var index = 0; index < Inventory.MaxSize.Current; index++)
             {
                 var artifact = Inventory.Artifacts[index];
                 if (artifact == null)
@@ -67,9 +71,9 @@ namespace Game.Scripts.UI.Inventory
             }
         }
 
-        public void SetUpgradeLevel(int upgradeLevel)
+        public void SetUpgradeLevel()
         {
-            // throw new NotImplementedException();
+            UpdateUI();
         }
     }
 }

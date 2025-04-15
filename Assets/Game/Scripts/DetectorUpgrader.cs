@@ -28,6 +28,7 @@ namespace Game.Scripts
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
 
         private void OnEnable()
@@ -71,6 +72,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player entered");
             _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
             _detectorUI.StartFollowing(transform.position + _worldOffest);
+            _buyUpgradeButton.gameObject.SetActive(true);
         }
 
         private void OnPlayerExited()
@@ -78,6 +80,7 @@ namespace Game.Scripts
             Debug.Log("ArtifactContainer: Player exited");
             _spriteRenderer.material.SetFloat("_Thickness", 0);
             _detectorUI.StopFollowing();
+            _buyUpgradeButton.gameObject.SetActive(false);
         }
     }
 }
