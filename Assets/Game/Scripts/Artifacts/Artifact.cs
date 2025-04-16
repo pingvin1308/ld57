@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,13 +8,15 @@ namespace Game.Scripts.Artifacts
     [RequireComponent(typeof(SpriteRenderer))]
     public class Artifact : MonoBehaviour
     {
+        [field: SerializeField]
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        
         private SpriteRenderer _spriteRenderer;
-        private bool _isPickable;
+        
+        [field: SerializeField]
+        public bool IsPickable { get; private set; }
 
         public UnityEvent<ArtifactData> Collected;
-
-        [field: SerializeField]
-        public bool IsRevealed { get; private set; }
 
         [field: SerializeField]
         public ArtifactData Data { get; private set; }
@@ -46,37 +49,37 @@ namespace Game.Scripts.Artifacts
 
         public void Hide()
         {
+            Data.IsRevealed = false;
             _spriteRenderer.enabled = false;
-            IsRevealed = false;
-            _isPickable = false;
+            IsPickable = false;
         }
 
         private IEnumerator SetPickable()
         {
             yield return new WaitForSeconds(0.5f);
-            IsRevealed = true;
-            _isPickable = true;
+            Data.IsRevealed = true;
+            IsPickable = true;
         }
         
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (_isPickable == false)
-            {
-                return;
-            }
-
-            if (other.CompareTag("Player"))
-            {
-                // Здесь можно добавить звук, эффект, счетчик и т.д.
-                var player = other.GetComponent<Player>();
-                if (player.Inventory.IsEnoughSpace)
-                {
-                    Debug.Log("Предмет подобран!");
-                    Collected?.Invoke(Data);
-                    Destroy(gameObject);
-                }
-            }
-        }
+        // private void OnTriggerEnter2D(Collider2D other)
+        // {
+        //     if (_isPickable == false)
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (other.TryGetComponent<Player>(out var player))
+        //     {
+        //         // Здесь можно добавить звук, эффект, счетчик и т.д.
+        //         if (player.Inventory.IsEnoughSpace)
+        //         {
+        //             Debug.Log("Предмет подобран!");
+        //             Collected?.Invoke(Data);
+        //             Collected?.RemoveAllListeners();
+        //             Destroy(gameObject);
+        //         }
+        //     }
+        // }
 
         private void OnDestroy()
         {

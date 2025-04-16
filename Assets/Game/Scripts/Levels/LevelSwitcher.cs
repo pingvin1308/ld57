@@ -5,11 +5,11 @@ namespace Game.Scripts.Levels
 {
     public class LevelSwitcher : MonoBehaviour
     {
-        private readonly Dictionary<int, LevelBase> _levelCache = new();
-    
+        private readonly Dictionary<int, LevelData> _levelCache = new();
+
         [field: SerializeField]
         public LevelGenerator LevelGenerator { get; private set; }
-    
+
         [field: SerializeField]
         public LevelBase CurrentLevel { get; private set; }
 
@@ -18,10 +18,10 @@ namespace Game.Scripts.Levels
 
         [field: SerializeField]
         public UpLevelTrigger UpLevelTrigger { get; private set; }
-        
+
         [field: SerializeField]
         public Player Player { get; private set; }
-        
+
         private void Awake()
         {
             CurrentLevel.Enable(Player);
@@ -29,14 +29,14 @@ namespace Game.Scripts.Levels
 
         public void BackToHub()
         {
-            foreach (var level in _levelCache)
-            {
-                Destroy(level.Value.gameObject);
-            }
-            
-            CurrentLevel.Disable();
-            Player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -3);
+            // foreach (var level in _levelCache)
+            // {
+            //     Destroy(level.Value.gameObject);
+            // }
 
+            Destroy(CurrentLevel.gameObject);
+            // CurrentLevel.Disable();
+            Player.transform.position = UpLevelTrigger.transform.position + new Vector3(0, -3);
             CurrentLevel = ExpeditionHub;
             CurrentLevel.Enable(Player);
             _levelCache.Clear();
@@ -44,40 +44,41 @@ namespace Game.Scripts.Levels
 
         public void SwitchLevel(LevelDirection direction)
         {
-            var nextLevel = GetNextLevel(direction);
-            if (nextLevel == ExpeditionHub)
+            var nextLevelNumber = CurrentLevel.LevelNumber + (int)direction;
+            if (nextLevelNumber == ExpeditionHub.LevelNumber)
             {
-                // reset levels
-                foreach (var level in _levelCache)
-                {
-                    Destroy(level.Value.gameObject);
-                }
-                _levelCache.Clear();
+                BackToHub();
+                return;
             }
-            
-            CurrentLevel.Disable();
+
+            var nextLevel = GetNextLevel(nextLevelNumber);
+            nextLevel.Enable(Player);
+            if (CurrentLevel != ExpeditionHub)
+            {
+                Destroy(CurrentLevel.gameObject);
+            }
+            else
+            {
+                ExpeditionHub.Disable();
+            }
+
+            // CurrentLevel.Disable();
             CurrentLevel = nextLevel;
-            CurrentLevel.Enable(Player);
         }
 
-        private LevelBase GetNextLevel(LevelDirection direction)
+        private LevelBase GetNextLevel(int nextLevelNumber)
         {
-            var nextLevelNumber = CurrentLevel.LevelNumber + (int)direction;
-
-            if (_levelCache.TryGetValue(nextLevelNumber, out var level))
+            if (_levelCache.TryGetValue(nextLevelNumber, out var levelData))
             {
+                var level = LevelGenerator.Generate(nextLevelNumber, levelData);
+                Debug.Log($"Restore level: {nextLevelNumber}");
                 return level;
             }
 
-            if (direction == LevelDirection.Down)
-            {
-                Debug.Log($"Generate level: {nextLevelNumber}");
-                var createdLevel = LevelGenerator.Generate(nextLevelNumber);
-                _levelCache.Add(nextLevelNumber, createdLevel);
-                return createdLevel;
-            }
-
-            return ExpeditionHub;
+            Debug.Log($"Generate level: {nextLevelNumber}");
+            var createdLevel = LevelGenerator.Generate(nextLevelNumber);
+            _levelCache.Add(nextLevelNumber, createdLevel.Data);
+            return createdLevel;
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Game.Scripts
             Acceleration.Apply(accelerationModifier);
 
             var mirrorCount = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.MovementMirror);
-            var isMirrored = mirrorCount % 2 != 0;
+            var isMirrored = mirrorCount > 0 && mirrorCount % 2 != 0;
             if (isMirrored)
             {
                 inputDirection = -inputDirection;

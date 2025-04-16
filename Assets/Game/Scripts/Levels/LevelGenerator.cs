@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Scripts.Artifacts;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -59,23 +60,43 @@ namespace Game.Scripts.Levels
         [field: SerializeField]
         public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
 
-        public LevelBase Generate(int nextLevelNumber)
+        public LevelBase Generate(int nextLevelNumber, LevelData data = null)
         {
-            Random.InitState(Random.Range(0, int.MinValue));
+            var seed = data?.Seed ?? Random.Range(0, int.MinValue);
+            Random.InitState(seed);
 
             var levelSettings = LevelSettingsDatabase.LevelSettings
                 .FirstOrDefault(x => x.LevelNumber == Math.Abs(nextLevelNumber));
-            
+
             var levelGameObject = Instantiate(LevelPrefab, transform);
-            levelGameObject.Init(
-                levelNumber: nextLevelNumber,
-                oxygenConsumptionRate: levelSettings?.OxygenConsumptionRate ?? 10
-            );
             
+            levelGameObject.Init(
+                data ?? new LevelData(
+                    seed: seed,
+                    oxygenConsumptionRate: levelSettings?.OxygenConsumptionRate ?? 10,
+                    levelNumber: nextLevelNumber,
+                    levelType: LevelType.Common
+                )   
+            );
+
             var rooms = GenerateFloor(levelGameObject.FloorTilemap);
             GenerateWalls(levelGameObject.FloorTilemap, levelGameObject.WallsTilemap);
-            var artifacts = GenerateArtifacts(levelGameObject, rooms);
-            levelGameObject.AddArtifacts(artifacts.ToArray());
+
+            if (data != null)
+            {
+                for (var i = 0; i < data.Artifacts.Count; i++)
+                {
+                    var artifactData = data.Artifacts[i];
+                    // data.Artifacts.Remove(artifactData);
+                    ArtifactSpawner.DropArtifact(artifactData.Position, artifactData, levelGameObject);
+                }
+            }
+            else
+            {
+                var artifacts = GenerateArtifacts(levelGameObject, rooms);
+                levelGameObject.AddArtifacts(artifacts.Select(x => x.Data).ToArray());
+            }
+
             levelGameObject.LevelEnabled.AddListener(Player.OnLevelEnabled);
             return levelGameObject;
         }

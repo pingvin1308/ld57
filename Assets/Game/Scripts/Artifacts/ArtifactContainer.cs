@@ -20,9 +20,8 @@ namespace Game.Scripts
         [Header("State")]
         [SerializeField] private ArtifactPlaceholderArea artifactPlaceholderArea;
         [SerializeField] private OrderProgress _orderProgress;
-        
-        [field: SerializeField]
-        public ArtifactData Artifact { get; private set; }
+
+        private ArtifactData _artifact;
 
         private void Awake()
         {
@@ -61,15 +60,15 @@ namespace Game.Scripts
 
         private void OnSellPressed()
         {
-            if (Artifact == null) return;
-            _orderProgress.CompleteOrder(new[] { Artifact });
+            if (_artifact == null) return;
+            _orderProgress.CompleteOrder(new[] { _artifact });
             artifactPlaceholderArea.CleanUI();
-            Artifact = null;
+            _artifact = null;
         }
 
         private void OnArtifactPlaced(ArtifactData artifactData)
         {
-            if (Artifact != null)
+            if (_artifact != null)
             {
                 Debug.Log("ArtifactContainer: Not enough place");
                 artifactPlaceholderArea.DropArtifact(artifactData);
@@ -77,18 +76,18 @@ namespace Game.Scripts
             }
 
             Debug.Log("ArtifactContainer: Artifact placed");
-            Artifact = artifactData;
+            _artifact = artifactData;
             artifactPlaceholderArea.UpdateUI(artifactData);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (Artifact == null || artifactPlaceholderArea.Player == null) return;
+            if (_artifact == null || artifactPlaceholderArea.Player == null) return;
 
             Debug.Log("ArtifactContainer: Artifact collected");
-            artifactPlaceholderArea.DropArtifact(Artifact);
+            artifactPlaceholderArea.DropArtifact(_artifact);
             artifactPlaceholderArea.CleanUI();
-            Artifact = null;
+            _artifact = null;
         }
     }
 }

@@ -24,7 +24,6 @@ namespace Game.Scripts
             .Where(x => x != null)
             .ToArray();
 
-        [field: SerializeField]
         public ArtifactData[] Artifacts { get; private set; } = new ArtifactData[7];
 
         [field: SerializeField]
@@ -74,7 +73,7 @@ namespace Game.Scripts
 
         public void OnArtifactSpawned(Artifact artifact)
         {
-            artifact.Collected.AddListener(OnArtifactCollected);
+            // artifact.Collected.AddListener(OnArtifactCollected);
         }
 
         public void DropArtifacts()
@@ -105,7 +104,7 @@ namespace Game.Scripts
 
         public void DropArtifact(ArtifactData artifact, int index)
         {
-            ArtifactSpawner.DropArtifact(artifact);
+            ArtifactSpawner.DropArtifact(transform.position, artifact);
             Artifacts[index] = null;
             OnInventoryChanged?.Invoke();
         }
@@ -114,6 +113,25 @@ namespace Game.Scripts
         {
             UpgradeLevel = upgradeLevel;
             MaxSize.Apply(upgrade);
+        }
+        
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.TryGetComponent<Artifact>(out var artifact) && artifact.IsPickable)
+            {
+                if (!IsEnoughSpace) return;
+                OnArtifactCollected(artifact.Data);
+                artifact.Collected?.Invoke(artifact.Data);
+                Destroy(artifact.gameObject);
+                // // Здесь можно добавить звук, эффект, счетчик и т.д.
+                // if (player.Inventory.IsEnoughSpace)
+                // {
+                //     Debug.Log("Предмет подобран!");
+                //     Collected?.Invoke(Data);
+                //     Collected?.RemoveAllListeners();
+                //     Destroy(gameObject);
+                // }
+            }
         }
     }
 }

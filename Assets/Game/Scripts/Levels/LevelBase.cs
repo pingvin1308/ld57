@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Scripts.Artifacts;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,34 +8,58 @@ using UnityEngine.Tilemaps;
 
 namespace Game.Scripts.Levels
 {
-    public abstract class LevelBase : MonoBehaviour
+    [Serializable]
+    public class LevelData
     {
-        private bool _initialized = false;
+        public int Seed { get; private set; }
 
-        public Player Player { get; private set; }
-        
-        public UnityEvent<LevelBase> LevelEnabled;
-        [SerializeField] 
-        private List<Artifact> _artifacts = new();
-
-        [field: SerializeField] 
         public int LevelNumber { get; private set; }
 
-        [field: SerializeField]
+        public List<ArtifactData> Artifacts { get; private set; } = new();
+
         public LevelType LevelType { get; private set; }
-        
-        [field: SerializeField]
+
         public float OxygenConsumptionRate { get; private set; }
 
-        public IReadOnlyCollection<Artifact> Artifacts => _artifacts;
+        public LevelData(int seed, int levelNumber, LevelType levelType, float oxygenConsumptionRate)
+        {
+            Seed = seed;
+            LevelNumber = levelNumber;
+            LevelType = levelType;
+            OxygenConsumptionRate = oxygenConsumptionRate;
+        }
+    }
+
+    public abstract class LevelBase : MonoBehaviour
+    {
+        private bool _initialized;
+
+        public UnityEvent<LevelBase> LevelEnabled;
+
+        [field: SerializeField]
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        
+        [Header("State")]
+        public LevelData Data { get; private set; }
+
+        public IReadOnlyCollection<ArtifactData> Artifacts => Data.Artifacts;
+
+        public int LevelNumber => Data.LevelNumber;
+
+        public LevelType LevelType => Data.LevelType;
+
+        public float OxygenConsumptionRate => Data.OxygenConsumptionRate;
+
+        [Header("Dependencies")]
+        public Player Player { get; private set; }
 
         [field: SerializeField]
         public Tilemap FloorTilemap { get; private set; }
-        
+
         [field: SerializeField]
         public Tilemap WallsTilemap { get; private set; }
-        
-        public void Init(int levelNumber, float oxygenConsumptionRate, IReadOnlyCollection<Artifact> artifacts = null)
+
+        public void Init(LevelData data, ArtifactData[] artifacts = null)
         {
             if (_initialized)
             {
@@ -41,26 +67,45 @@ namespace Game.Scripts.Levels
                 return;
             }
 
-            if (artifacts is { Count: > 0 })
+            Data = data;
+
+            if (artifacts is { Length: > 0 })
             {
-                _artifacts.AddRange(artifacts);
+                AddArtifacts(artifacts);
             }
 
-            LevelNumber = levelNumber;
-            OxygenConsumptionRate = oxygenConsumptionRate;
-            
             _initialized = true;
         }
 
-        public void AddArtifacts(params Artifact[] artifacts)
+        // private void OnEnable()
+        // {
+        //     Player.Inventory.OnInventoryChanged.AddListener(Remove);
+        // }
+        //
+        // private void OnDisable()
+        // {
+        //     Player.Inventory.OnInventoryChanged.RemoveListener(Remove);
+        // }
+
+        public void AddArtifacts(params ArtifactData[] artifacts)
         {
-            _artifacts.AddRange(artifacts);
+            Data.Artifacts.AddRange(artifacts);
         }
-        
-        public void Disable()
+
+        public void Remove(ArtifactData artifactData)
         {
+            Data.Artifacts.Remove(artifactData);
+        }
+
+        public virtual void Disable()
+        {
+            // Player.Inventory.OnInventoryChanged.RemoveListener(Remove);
             Player = null;
-            gameObject.SetActive(false);
+            // gameObject.SetActive(false);
+            // foreach (var artifact in Artifacts)
+            // {
+            // artifact.gameObject.SetActive(false);
+            // }
         }
 
         public void Enable(Player player)
@@ -69,6 +114,12 @@ namespace Game.Scripts.Levels
             Player.OnLevelEnabled(this);
             gameObject.SetActive(true);
             LevelEnabled?.Invoke(this);
+            // Player.Inventory.OnInventoryChanged.AddListener(Remove);
+
+            // foreach (var artifact in Artifacts)
+            // {
+            // artifact.gameObject.SetActive(true);
+            // }
         }
 
         private void OnDestroy()

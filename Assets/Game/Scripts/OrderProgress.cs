@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Game.Scripts.Artifacts;
 using UnityEngine;
 using UnityEngine.Events;
@@ -53,48 +52,6 @@ namespace Game.Scripts
             OrderCompleted?.RemoveAllListeners();
             OrderChanged?.RemoveAllListeners();
             OrderProgressChanged?.RemoveAllListeners();
-        }
-    }
-
-    public class OrderData
-    {
-        /// <summary>
-        /// Sum of artifacts value
-        /// </summary>
-        public int InitialGoal { get; }
-
-        /// <summary>
-        /// Sum of artifacts value
-        /// </summary>
-        public int Goal { get; private set; }
-
-        /// <summary>
-        /// Money
-        /// </summary>
-        public int Reward { get; private set; }
-
-        public OrderData(int goal, int reward)
-        {
-            InitialGoal = goal;
-            Goal = goal;
-            Reward = reward;
-        }
-
-        public bool TryComplete(IReadOnlyCollection<ArtifactData> artifacts)
-        {
-            Goal -= artifacts.Sum(x => x.BasePrice);
-            return Goal <= 0;
-        }
-    }
-
-    public class OrderProgression
-    {
-        public int CompletedOrders { get; set; }
-
-        public OrderData GetNext()
-        {
-            var minScale = CompletedOrders + 1;
-            return new OrderData(10 * minScale, 10 * minScale);
         }
     }
 }

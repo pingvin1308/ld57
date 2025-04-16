@@ -8,7 +8,7 @@ namespace Game.Scripts.Artifacts
     public class ArtifactsDatabase : ScriptableObject
     {
         [field: SerializeField]
-        public List<ArtifactData> AllArtifacts { get; private set; }
+        public List<ArtifactDataSO> AllArtifacts { get; private set; }
 
         private void Awake()
         {
@@ -17,17 +17,17 @@ namespace Game.Scripts.Artifacts
 
         private void LoadAllArtifacts()
         {
-            var loaded = Resources.LoadAll<ArtifactData>("Artifacts");
-            AllArtifacts = new List<ArtifactData>(loaded);
+            var loaded = Resources.LoadAll<ArtifactDataSO>("Artifacts");
+            AllArtifacts = new List<ArtifactDataSO>(loaded);
             Debug.Log($"Загружено {AllArtifacts.Count} артефактов.");
         }
         
-        public ArtifactData GetByID(ArtifactId id)
+        public ArtifactDataSO GetByID(ArtifactId id)
         {
             return AllArtifacts.Find(x => x.ArtifactId == id);
         }
 
-        public ArtifactData[] Get(int levelNumber, LevelType levelType)
+        public ArtifactDataSO[] Get(int levelNumber, LevelType levelType)
         {
             return AllArtifacts
                 .Where(x => x.StartingLevel <= levelNumber && x.LevelType == levelType)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game.Scripts.Levels;
 using UnityEngine;
@@ -23,40 +24,63 @@ namespace Game.Scripts.Artifacts
         public Artifact LightArtifactPrefab { get; private set; }
 
         [field: SerializeField]
-        public Player Player { get; private set; }
-
-        [field: SerializeField]
         public LevelSettingsDatabase LevelSettingsDatabase { get; private set; }
 
         [field: SerializeField]
         public LevelSwitcher LevelSwitcher { get; private set; }
-        
+
         public Artifact SpawnArtifact(Vector3 pos, LevelBase level)
         {
             var artifactData = GetRandomArtifactData(level);
             var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
                 ? LightArtifactPrefab
                 : ArtifactPrefab;
-            
+
             var artifact = Instantiate(artifactPrefab, pos, Quaternion.identity, level.transform);
+            artifact.Collected.AddListener(level.Remove);
             artifactData.SpawnedAtLevel = level.LevelNumber;
+            artifactData.Position = pos;
             artifact.Init(artifactData);
             OnArtifactSpawned?.Invoke(artifact);
+            Debug.Log($"Spawn artifact: {artifact.Data.ArtifactId}");
             return artifact;
         }
 
-        public void DropArtifact(ArtifactData artifactData)
+        public void DropArtifact(Vector3 transformPosition, ArtifactData artifactData, LevelBase level)
         {
             var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
                 ? LightArtifactPrefab
                 : ArtifactPrefab;
-            
-            var artifact = Instantiate(artifactPrefab, Player.transform.position, Quaternion.identity,
-                LevelSwitcher.CurrentLevel.transform);
-            
+
+            var artifact = Instantiate(artifactPrefab, transformPosition, Quaternion.identity, level.transform);
+            artifact.Collected.AddListener(level.Remove);
+            artifactData.Position = transformPosition;
             artifact.Init(artifactData);
-            artifact.Reveal();
-            LevelSwitcher.CurrentLevel.AddArtifacts(artifact);
+            if (artifactData.IsRevealed)
+            {
+                artifact.Reveal();
+            }
+            Debug.Log($"Drop artifact: {artifact.Data.ArtifactId}");
+            OnArtifactSpawned?.Invoke(artifact);
+        }
+        
+        public void DropArtifact(Vector3 transformPosition, ArtifactData artifactData)
+        {
+            var level = LevelSwitcher.CurrentLevel;
+            var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
+                ? LightArtifactPrefab
+                : ArtifactPrefab;
+
+            var artifact = Instantiate(artifactPrefab, transformPosition, Quaternion.identity, level.transform);
+            artifact.Collected.AddListener(level.Remove);
+            artifactData.Position = transformPosition;
+            artifact.Init(artifactData);
+            if (artifactData.IsRevealed)
+            {
+                artifact.Reveal();
+            }
+            level.AddArtifacts(artifact.Data);
+            Debug.Log($"Drop artifact: {artifact.Data.ArtifactId}");
             OnArtifactSpawned?.Invoke(artifact);
         }
 
@@ -68,45 +92,35 @@ namespace Game.Scripts.Artifacts
 
             if (level.LevelType == LevelType.Unique)
             {
-                // генерируем один на игру
-                return levelArtifacts
-                    .Where(x => x.Rarity == ArtifactRarity.Rare)
-                    .OrderBy(_ => Random.value)
-                    .First();
+                var artifactPrefab = GetRandomArtifact(levelArtifacts, ArtifactRarity.Unique);
+                return new ArtifactData(artifactPrefab); 
             }
 
             var notUniqueArtifacts = levelArtifacts
                 .Where(x => x.Rarity != ArtifactRarity.Unique)
                 .ToArray();
 
-            if (notUniqueArtifacts.All(x => x.Rarity == ArtifactRarity.Common))
+            var allRarities = notUniqueArtifacts
+                .Select(x => x.Rarity)
+                .Distinct()
+                .ToArray();
+
+            var selectedRarity = allRarities.Length switch
             {
-                return notUniqueArtifacts
-                    .Where(x => x.Rarity == ArtifactRarity.Common)
-                    .OrderBy(_ => Random.value)
-                    .First();
-            }
+                1 => allRarities[0],
+                _ => Random.value > 0.8f ? ArtifactRarity.Rare : ArtifactRarity.Common
+            };
 
-            if (notUniqueArtifacts.All(x => x.Rarity == ArtifactRarity.Rare))
-            {
-                return notUniqueArtifacts
-                    .Where(x => x.Rarity == ArtifactRarity.Rare)
-                    .OrderBy(_ => Random.value)
-                    .First();
-            }
+            var randomArtifactPrefab = GetRandomArtifact(notUniqueArtifacts, selectedRarity);
+            return new ArtifactData(randomArtifactPrefab); 
+        }
 
-            var rarity = Random.value > 0.8
-                ? ArtifactRarity.Rare
-                : ArtifactRarity.Common;
-
-            var randomArtifact = notUniqueArtifacts
+        private ArtifactDataSO GetRandomArtifact(IEnumerable<ArtifactDataSO> artifacts, ArtifactRarity rarity)
+        {
+            return artifacts
                 .Where(x => x.Rarity == rarity)
                 .OrderBy(_ => Random.value)
-                .First();
-
-            Debug.Log($"Spawn artifact: {randomArtifact.ArtifactId}");
-
-            return Instantiate(randomArtifact);            
+                .FirstOrDefault();
         }
     }
 }
