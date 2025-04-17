@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f31192b53225ef24c8a84014f9bd6740
+guid: c5cbbc0b2a2f10a4588cd0522dd09f95
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638804988565795111
+  platformSettingsDirtyTick: 638804967546993844
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -123,9 +123,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: artifact_container
+  - name: table_decoration
     originalName: 
-    pivot: {x: 0.5, y: -0.71428573}
+    pivot: {x: 0.48387095, y: -1.0476191}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,9 +133,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 16
-      height: 14
-    spriteID: 25f4b2b5c8b9e13468f358189695349d
+      width: 31
+      height: 21
+    spriteID: 830437f25f8783d40a1f64305dd33b4f
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,19 +145,19 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
   spriteSheetImportData:
-  - name: artifact_container_0
+  - name: table_decoration_0
     originalName: 
-    pivot: {x: 0.5, y: 0.9391637}
-    alignment: 9
-    border: {x: 1, y: 1, z: 1, w: 1}
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
-      x: 3
-      y: 3
-      width: 18
-      height: 16
-    spriteID: d459c447d4c4c4e4b991b12bad002db1
+      x: 4
+      y: 4
+      width: 31
+      height: 21
+    spriteID: 6ac61f3ba840c1e4ab315cefbb49c667
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -168,21 +168,21 @@ ScriptedImporter:
     uvTransform: {x: 0, y: 0}
   asepriteLayers:
   - layerIndex: 0
-    guid: -254884444
-    name: artifact_container
+    guid: -2141604961
+    name: table_decoration
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: artifact_container
+    - name: table_decoration
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 8
-        y: 10
-        width: 16
-        height: 14
-      spriteId: 25f4b2b5c8b9e13468f358189695349d
+        x: 17
+        y: 22
+        width: 31
+        height: 21
+      spriteId: 830437f25f8783d40a1f64305dd33b4f
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -237,5 +237,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 32, y: 32}
-  previousTextureSize: {x: 32, y: 32}
+  canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 64, y: 32}
