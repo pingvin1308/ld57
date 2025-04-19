@@ -19,6 +19,9 @@ namespace Game.Scripts.Dialog
         [field: SerializeField]
         public List<DialogChoice> Choices { get; private set; }
 
+        [field: SerializeField]
+        public DialogNode NextNode { get; private set; }
+        
         public void AddChoice(DialogChoice choice)
         {
             if (Choices == null)

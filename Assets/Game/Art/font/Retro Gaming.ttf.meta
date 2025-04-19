@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ecc08cd1bff659e42879989da69f326d
+guid: be123f729ee91c8498feab3eb5a74bd3
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - ZX Palm
+  - Retro Gaming
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

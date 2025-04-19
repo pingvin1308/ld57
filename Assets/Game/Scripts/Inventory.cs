@@ -71,11 +71,6 @@ namespace Game.Scripts
             }
         }
 
-        public void OnArtifactSpawned(Artifact artifact)
-        {
-            // artifact.Collected.AddListener(OnArtifactCollected);
-        }
-
         public void DropArtifacts()
         {
             for (var i = 0; i < Artifacts.Length; i++)

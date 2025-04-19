@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Game.Scripts.Dialog.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,12 +16,58 @@ namespace Game.Scripts.Dialog
 
         private DialogNode _currentNode;
         private GameObject _activeBubble;
+        
+        [field: SerializeField]
+        public float TextSpeed { get; private set; } = 0.05f;
 
         public void StartDialog(DialogNode startNode)
         {
             _currentNode = startNode;
-            ShowCurrentNode();
+            // ShowCurrentNode();
         }
+        private bool _awaitingInput;
+        private bool _dialogFinished;
+
+        public IEnumerator RunDialogSequence(List<DialogNode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                yield return ShowNodeCoroutine(node);
+            }
+
+            _dialogFinished = true;
+        }
+
+        private IEnumerator ShowNodeCoroutine(DialogNode node)
+        {
+            _currentNode = node;
+
+            ClearChoices();
+            var speaker = FindSpeaker(node.SpeakerId); 
+            if (speaker != null)
+            {
+                _activeBubble = Instantiate(speechBubblePrefab, speaker.transform.parent.position + speaker.Offset, Quaternion.identity, canvas.transform);
+                var ui = _activeBubble.GetComponent<SpeechBubblePanelUI>();
+                // var duration = Mathf.Max(2f, node.Text.Length * 0.1f);
+                yield return ui.Show(speaker.Offset, speaker.transform, node.Text, TextSpeed);
+            }
+
+            // yield return new WaitForSeconds(node.Text.Length * 0.05f);
+            
+            // _awaitingInput = true;
+            //
+            // while (_awaitingInput)
+            // {
+            //     if (Input.GetKeyDown(KeyCode.Space))
+            //         _awaitingInput = false;
+            //
+            //     yield return null;
+            // }
+
+            if (_activeBubble != null)
+                Destroy(_activeBubble);
+        }
+        
 
         private void ShowCurrentNode()
         {
@@ -27,32 +76,15 @@ namespace Game.Scripts.Dialog
             var speaker = FindSpeaker(_currentNode.SpeakerId);
             if (speaker != null)
             {
-                _activeBubble = Instantiate(speechBubblePrefab, canvas.transform);
+                _activeBubble = Instantiate(speechBubblePrefab, speaker.transform.position, Quaternion.identity, canvas.transform);
                 var ui = _activeBubble.GetComponent<SpeechBubbleUI>();
-                ui.Initialize(speaker, _currentNode.Text, Mathf.Max(2f, _currentNode.Text.Length * 0.3f));
-            }
-
-            if (_currentNode.Choices != null && _currentNode.Choices.Count > 0)
-            {
-                foreach (var choice in _currentNode.Choices)
-                {
-                    // var btn = Instantiate(choiceButtonPrefab, choicesParent);
-                    // btn.GetComponentInChildren<TMPro.TMP_Text>().text = choice.Text;
-                    //
-                    // btn.GetComponent<Button>().onClick.AddListener(() =>
-                    // {
-                    //     if (_activeBubble != null) Destroy(_activeBubble);
-                    //     _currentNode = choice.NextNode;
-                    //     ShowCurrentNode();
-                    // });
-                }
+                // ui.Initialize(speaker, _currentNode.Text, Mathf.Max(2f, _currentNode.Text.Length * 0.3f));
             }
         }
 
-        private Transform FindSpeaker(SpeakerId id)
+        private DialogSpeaker FindSpeaker(SpeakerId id)
         {
-            return FindObjectsOfType<DialogSpeaker>()
-                .FirstOrDefault(s => s.SpeakerId == id)?.transform;
+            return FindObjectsOfType<DialogSpeaker>()?.FirstOrDefault(s => s.SpeakerId == id);
         }
 
         private void ClearChoices()

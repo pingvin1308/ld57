@@ -9,5 +9,8 @@ namespace Game.Scripts.Dialog
 
         [field: SerializeField]
         public string DisplayName { get; private set; }
+
+        [field: SerializeField]
+        public Vector3 Offset { get; private set; }
     }
 }
