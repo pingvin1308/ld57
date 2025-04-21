@@ -11,5 +11,6 @@ namespace Game.Scripts.Artifacts
         StinkyCheese = 6,
         ShinyStone = 7,
         Firefly = 8,
+        CatAppraiser = 9,
     }
 }

@@ -25,6 +25,16 @@ namespace Game.Scripts
             (Price: 300, Value: 3),
         };
 
+        public void HighlightEnable()
+        {
+            _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
+        }
+
+        public void HighlightDisable()
+        {
+            _spriteRenderer.material.SetFloat("_Thickness", 0);
+        }
+
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -43,14 +53,14 @@ namespace Game.Scripts
             if (_interactionArea.Player == null) return;
             var player = _interactionArea.Player;
 
-            var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
+            var upgradeLevel = player.Detector.UpgradeLevel + 1;
             if (DetectorUpgrades.Length == upgradeLevel) return;
 
             var upgrade = DetectorUpgrades[upgradeLevel];
 
             if (player.Inventory.SpendMoney(upgrade.Price))
             {
-                player.Oxygen.ApplyUpgrade(upgrade.Value, upgradeLevel);
+                player.Detector.ApplyUpgrade(upgradeLevel);
                 // _inventoryCanvasUI..SetUpgradeLevel(upgradeLevel);
                 Debug.Log("Апгрейд куплен!");
             }
@@ -70,7 +80,7 @@ namespace Game.Scripts
         private void OnPlayerEntered()
         {
             Debug.Log("ArtifactContainer: Player entered");
-            _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
+            HighlightEnable();
             _detectorUI.StartFollowing(transform.position + _worldOffest);
             _buyUpgradeButton.gameObject.SetActive(true);
         }
@@ -78,7 +88,7 @@ namespace Game.Scripts
         private void OnPlayerExited()
         {
             Debug.Log("ArtifactContainer: Player exited");
-            _spriteRenderer.material.SetFloat("_Thickness", 0);
+            HighlightDisable();
             _detectorUI.StopFollowing();
             _buyUpgradeButton.gameObject.SetActive(false);
         }

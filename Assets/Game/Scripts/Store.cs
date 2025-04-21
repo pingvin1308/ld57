@@ -45,12 +45,10 @@ namespace Game.Scripts
                 // Здесь можно добавить звук, эффект, счетчик и т.д.
                 Debug.Log("Предмет подобран!");
 
-                // обмениваем артифакты на деньги
                 var player = other.GetComponent<Player>();
                 var upgradeLevel = player.Oxygen.UpgradeLevel + 1;
                 var upgrade = Upgrades.OxygenUpgrades[upgradeLevel];
 
-                // просчитать ценность
                 if (player.Inventory.SpendMoney(upgrade.Price))
                 {
                     player.Oxygen.ApplyUpgrade(upgrade.Value, upgradeLevel);

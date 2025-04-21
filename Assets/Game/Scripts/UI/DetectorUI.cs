@@ -24,7 +24,7 @@ namespace Game.Scripts.UI
 
         private void OnArtifactsDetected()
         {
-            if (!Detector.ScanArea.ArtifactDetected)
+            if (!Detector.ScanArea.ArtifactDetected && Detector.UpgradeLevel > 0)
             {
                 SignalUI.SetValue(0);
             }
@@ -32,7 +32,7 @@ namespace Game.Scripts.UI
 
         private void OnDistanceChanged()
         {
-            if (!Detector.ScanArea.ArtifactDetected)
+            if (!Detector.ScanArea.ArtifactDetected && Detector.UpgradeLevel > 0)
             {
                 return;
             }

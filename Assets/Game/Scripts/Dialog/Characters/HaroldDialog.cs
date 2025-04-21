@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Game.Scripts.Artifacts;
 using Game.Scripts.UI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game.Scripts.Dialog.Characters
 {
@@ -15,14 +18,34 @@ namespace Game.Scripts.Dialog.Characters
             En
         }
 
-        [field: SerializeField] public DialogRunner DialogRunner { get; private set; }
+        [field: SerializeField]
+        public DialogRunner DialogRunner { get; private set; }
 
-        [field: SerializeField] public HUD HUD { get; private set; }
+        [field: SerializeField]
+        public HUD HUD { get; private set; }
 
-        [field: SerializeField] public Language CurrentLanguage = Language.Ru;
+        [field: SerializeField]
+        public Language CurrentLanguage { get; private set; } = Language.En;
 
-        private int currentDialog = 0;
+        [field: SerializeField]
+        public DetectorUpgrader DetectorUpgrader { get; private set; }
+
+        [field: SerializeField]
+        public ArtifactSpawner ArtifactSpawner { get; private set; }
+
+        [field: SerializeField]
+        public ArtifactsDatabase ArtifactsDatabase { get; private set; }
+
+        [field: SerializeField]
+        public ArtifactContainer ArtifactContainer { get; private set; }
+
+        [field: SerializeField]
+        public PlayerCamera PlayerCamera { get; private set; }
+
+
+        private int _currentDialog = 0;
         private Dictionary<int, Func<Player, IEnumerator>> _dialogs;
+        private Goal _currentGoal = null;
 
         private void Awake()
         {
@@ -43,14 +66,23 @@ namespace Game.Scripts.Dialog.Characters
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.TryGetComponent<Player>(out var player) && _dialogs.TryGetValue(currentDialog, out var dlg))
+            if (other.TryGetComponent<Player>(out var player))
             {
-                StartCoroutine(dlg(player));
+                if (!_currentGoal?.Achieved ?? false)
+                {
+                    return;
+                }
+
+                if (_dialogs.TryGetValue(_currentDialog, out var dlg))
+                {
+                    StartCoroutine(dlg(player));
+                }
             }
         }
 
         private IEnumerator Introduction(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -98,12 +130,16 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-
-            currentDialog = 1;
+            player.EnableInput();
+            _currentGoal = new Goal(
+                text: "Collect 10 shine stones",
+                condition: () => player.Inventory.Money > 10);
+            _currentDialog = 1;
         }
 
         private IEnumerator UpgradingTheDetector(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -121,37 +157,99 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 2;
+            DetectorUpgrader.HighlightEnable();
+            player.EnableInput();
+            _currentGoal = new Goal(
+                text: "Upgrade the detector",
+                condition: () => player.Detector.UpgradeLevel > 0);
+            _currentDialog = 2;
         }
 
         private IEnumerator TestTheDetector(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
                     Language.Ru, new[]
                     {
-                        "Отлично, теперь проверим детектор в деле.",
-                        "Я спрятал тренировочный артефакт — найди его с помощью детектора.",
-                        "Чем сильнее сигнал, тем ближе он. Нажми R для режима «раскрытие».",
-                        "Наведи луч — и ты увидишь его!"
+                        "Отлично, теперь давай опробуем детектор в действии.",
+                        "Я спрятал перед тобой тренировочный артефакт — найди его при помощи детектора.",
+                        "Чем сильнее сигнал, тем ближе артефакт. Попробуй включить режим «раскрытие» (R).",
+                        "Наведи луч на место — и вот он, готов к подбору!"
                     }
                 },
                 {
                     Language.En, new[]
                     {
-                        "Great, now let's test the detector.",
-                        "I've hidden a training artifact—find it with the detector.",
-                        "The stronger the signal, the closer it is. Press R to reveal.",
-                        "Aim the beam—and there you go!"
+                        "Great, now let’s test the detector in action.",
+                        "I’ve hidden a training artifact here — locate it using the detector.",
+                        "The stronger the signal, the closer the artifact. Try switching to “reveal” mode (R).",
+                        "Aim the beam there — and there it is, ready to pick up!"
                     }
                 }
             });
-            currentDialog = 3;
+
+            var firefly = ArtifactsDatabase.AllArtifacts.First(x => x.ArtifactId == ArtifactId.Firefly);
+            var spawnerArtifact = ArtifactSpawner.DropArtifact(new Vector2(-8.62f, -3.04f), new ArtifactData(firefly));
+            spawnerArtifact.Reveal();
+            player.EnableInput();
+            yield return new WaitUntil(() => player.Inventory.CollectedArtifacts.Contains(spawnerArtifact.Data));
+
+            player.DisableInput();
+            PlayerCamera.SetTarget(transform);
+
+            var artifactSold = false;
+            UnityAction onArtifactSold = () => artifactSold = true;
+            ArtifactContainer.OnArtifactSold.AddListener(onArtifactSold);
+            ArtifactContainer.EnableHighlight();
+
+            yield return RunSequence(new Dictionary<Language, string[]>
+            {
+                {
+                    Language.Ru, new[]
+                    {
+                        "Хорошая работа, бери и приноси сюда на стойку для продажи артефактов.",
+                    }
+                },
+                {
+                    Language.En, new[]
+                    {
+                        "Good job — grab it and bring it back here to the selling rack for artifacts.",
+                    }
+                }
+            });
+            PlayerCamera.SetTarget(player.transform);
+            player.EnableInput();
+            yield return new WaitUntil(() => artifactSold);
+            ArtifactContainer.OnArtifactSold.RemoveListener(onArtifactSold);
+
+            player.DisableInput();
+            yield return RunSequence(new Dictionary<Language, string[]>
+            {
+                {
+                    Language.Ru, new[]
+                    {
+                        "Славно, теперь ты примерно понимаешь, как происходит поиск и продажа артефактов.",
+                        "Подойди ко мне как будешь готов продолжить."
+                    }
+                },
+                {
+                    Language.En, new[]
+                    {
+                        "Well done, now you have a general idea of how artifact hunting and selling works.",
+                        "Come back to me when you will be ready."
+                    }
+                }
+            });
+            player.EnableInput();
+
+            _currentDialog = 3;
         }
 
         private IEnumerator ArtifactHunting(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -171,17 +269,23 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 4;
+
+            player.EnableInput();
+            _currentGoal = new Goal(
+                text: "Bring LightWeight artifact",
+                condition: () => player.Inventory.CollectedArtifacts.Any(x => x.ArtifactId == ArtifactId.LightWeight));
+            _currentDialog = 4;
         }
 
         private IEnumerator FirstSell(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
                     Language.Ru, new[]
                     {
-                        "Выглядит неплохо! Принеси свои находки к этой стойке.",
+                        "Выглядит неплохо! Принеси свои находки к стойке.",
                         "Вот твой первый заработок — молодец! Настоящий охотник за артефактами.",
                         "На первых трех уровнях много не заработаешь. Для апгрейда нужно 100 камней.",
                         "Сделай пару заходов, чтобы накопить их."
@@ -190,18 +294,23 @@ namespace Game.Scripts.Dialog.Characters
                 {
                     Language.En, new[]
                     {
-                        "Looking good! Bring your finds to this counter.",
+                        "Looking good! Bring your finds to the selling rack.",
                         "Here's your first earnings—well done! A real artifact hunter now.",
                         "You won't earn much on the first three floors. To upgrade you need 100 stones.",
                         "Make a couple more runs to collect them."
                     }
                 }
             });
-            currentDialog = 5;
+            player.EnableInput();
+            _currentGoal = new Goal(
+                text: "Collect 100 shiny stones",
+                condition: () => player.Inventory.Money >= 100);
+            _currentDialog = 5;
         }
 
         private IEnumerator UpgradeOxygen(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -219,33 +328,42 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 6;
+            player.EnableInput();
+            _currentGoal = new Goal(
+                text: "Upgrade oxygen balloon",
+                condition: () => player.Oxygen.UpgradeLevel > 0);
+            _currentDialog = 6;
         }
 
         private IEnumerator GoDeeper(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
                     Language.Ru, new[]
                     {
                         "Поздравляю с апгрейдом! На глубине артефакты редче, но ценнее.",
-                        "Следи за ловушками — они могут появиться внезапно."
+                        "Следи за ловушками — они могут появиться внезапно.",
+                        "Подойди ко мне как будешь готов продолжить."
                     }
                 },
                 {
                     Language.En, new[]
                     {
                         "Congrats on the upgrade! Deeper floors have rarer but pricier artifacts.",
-                        "Watch for traps—they can appear unexpectedly."
+                        "Watch for traps—they can appear unexpectedly.",
+                        "Come back to me when you will be ready."
                     }
                 }
             });
-            currentDialog = 7;
+            player.EnableInput();
+            _currentDialog = 7;
         }
 
         private IEnumerator UniqueArtifacts(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -265,11 +383,17 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 8;
+            player.EnableInput();
+
+            _currentGoal = new Goal(
+                text: "Find the Cat Appraiser.",
+                condition: () => player.Inventory.CollectedArtifacts.Any(x => x.ArtifactId == ArtifactId.CatAppraiser));
+            _currentDialog = 8;
         }
 
         private IEnumerator SellTheCat(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -287,11 +411,13 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 9;
+            player.EnableInput();
+            _currentDialog = 9;
         }
 
         private IEnumerator FinalGoal(Player player)
         {
+            player.DisableInput();
             yield return RunSequence(new Dictionary<Language, string[]>
             {
                 {
@@ -311,7 +437,12 @@ namespace Game.Scripts.Dialog.Characters
                     }
                 }
             });
-            currentDialog = 10;
+            player.EnableInput();
+
+            _currentGoal = new Goal(
+                text: "Pay off the debt",
+                condition: () => player.Inventory.Money >= 1000);
+            _currentDialog = 10;
         }
 
         private IEnumerator RunSequence(Dictionary<Language, string[]> textsByLanguage)

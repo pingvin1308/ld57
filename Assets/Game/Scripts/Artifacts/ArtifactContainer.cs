@@ -1,6 +1,8 @@
+using System;
 using Game.Scripts.Artifacts;
 using Game.Scripts.UI;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -9,16 +11,16 @@ namespace Game.Scripts
     [RequireComponent(typeof(SpriteRenderer))]
     public class ArtifactContainer : MonoBehaviour, IPointerClickHandler
     {
+        public UnityEvent OnArtifactSold;
+
         private bool _isMoving;
         private SpriteRenderer _spriteRenderer;
-        
-        [Header("UI")]
-        [SerializeField] private UIWorldFollower _inventoryUI;
+
+        [Header("UI")] [SerializeField] private UIWorldFollower _inventoryUI;
         [SerializeField] private Button _sellButton;
         [SerializeField] private Vector3 _worldOffest;
-        
-        [Header("State")]
-        [SerializeField] private ArtifactPlaceholderArea artifactPlaceholderArea;
+
+        [Header("State")] [SerializeField] private ArtifactPlaceholderArea artifactPlaceholderArea;
         [SerializeField] private OrderProgress _orderProgress;
 
         private ArtifactData _artifact;
@@ -26,6 +28,16 @@ namespace Game.Scripts
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
+        public void EnableHighlight()
+        {
+            _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
+        }
+
+        public void DisableHighlight()
+        {
+            _spriteRenderer.material.SetFloat("_Thickness", 0);
         }
 
         private void OnEnable()
@@ -47,23 +59,25 @@ namespace Game.Scripts
         private void OnPlayerEntered()
         {
             Debug.Log("ArtifactContainer: Player entered");
-            _spriteRenderer.material.SetFloat("_Thickness", 1.0f);
+            EnableHighlight();
             _inventoryUI.StartFollowing(transform.position + _worldOffest);
         }
 
         private void OnPlayerExited()
         {
             Debug.Log("ArtifactContainer: Player exited");
-            _spriteRenderer.material.SetFloat("_Thickness", 0);
+            DisableHighlight();
             _inventoryUI.StopFollowing();
         }
 
         private void OnSellPressed()
         {
             if (_artifact == null) return;
-            _orderProgress.CompleteOrder(new[] { _artifact });
+            var price = _artifact.GetFinalPrice();
+            artifactPlaceholderArea.Player.Inventory.AddMoney(price);
             artifactPlaceholderArea.CleanUI();
             _artifact = null;
+            OnArtifactSold?.Invoke();
         }
 
         private void OnArtifactPlaced(ArtifactData artifactData)
@@ -88,6 +102,11 @@ namespace Game.Scripts
             artifactPlaceholderArea.DropArtifact(_artifact);
             artifactPlaceholderArea.CleanUI();
             _artifact = null;
+        }
+
+        private void OnDestroy()
+        {
+            OnArtifactSold?.RemoveAllListeners();
         }
     }
 }

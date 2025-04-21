@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.Scripts.UI
@@ -9,12 +10,14 @@ namespace Game.Scripts.UI
     {
         private Image _currentSignalImage;
 
+        [SerializeField]
+        private Sprite _brokenSprite; 
+        
         [SerializeField] 
-        private Sprite[] sprites;
+        private Sprite[] _sprites;
         
         [field: SerializeField]
         public int CurrentValue { get; private set; }
-        
         
         [field: SerializeField]
         public int MinValue { get; private set; } = 0;
@@ -24,15 +27,14 @@ namespace Game.Scripts.UI
         
         private void Awake()
         {
-            sprites = Resources.LoadAll<Sprite>("Detector/detector"); // имя файла без расширения
             _currentSignalImage = GetComponent<Image>();
-            _currentSignalImage.sprite = sprites[0];
+            _currentSignalImage.sprite = _brokenSprite;
         }
 
         public void SetValue(int value)
         {
             CurrentValue = Math.Min(value, MaxValue);
-            _currentSignalImage.sprite = sprites[CurrentValue];
+            _currentSignalImage.sprite = _sprites[CurrentValue];
         }
     }
 }

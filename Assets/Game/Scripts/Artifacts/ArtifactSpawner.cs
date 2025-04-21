@@ -60,11 +60,12 @@ namespace Game.Scripts.Artifacts
             {
                 artifact.Reveal();
             }
+
             Debug.Log($"Drop artifact: {artifact.Data.ArtifactId}");
             OnArtifactSpawned?.Invoke(artifact);
         }
-        
-        public void DropArtifact(Vector3 transformPosition, ArtifactData artifactData)
+
+        public Artifact DropArtifact(Vector3 transformPosition, ArtifactData artifactData)
         {
             var level = LevelSwitcher.CurrentLevel;
             var artifactPrefab = artifactData.ArtifactId == ArtifactId.Firefly
@@ -79,9 +80,11 @@ namespace Game.Scripts.Artifacts
             {
                 artifact.Reveal();
             }
+
             level.AddArtifacts(artifact.Data);
             Debug.Log($"Drop artifact: {artifact.Data.ArtifactId}");
             OnArtifactSpawned?.Invoke(artifact);
+            return artifact;
         }
 
         private ArtifactData GetRandomArtifactData(LevelBase level)
@@ -93,7 +96,7 @@ namespace Game.Scripts.Artifacts
             if (level.LevelType == LevelType.Unique)
             {
                 var artifactPrefab = GetRandomArtifact(levelArtifacts, ArtifactRarity.Unique);
-                return new ArtifactData(artifactPrefab); 
+                return new ArtifactData(artifactPrefab);
             }
 
             var notUniqueArtifacts = levelArtifacts
@@ -112,7 +115,7 @@ namespace Game.Scripts.Artifacts
             };
 
             var randomArtifactPrefab = GetRandomArtifact(notUniqueArtifacts, selectedRarity);
-            return new ArtifactData(randomArtifactPrefab); 
+            return new ArtifactData(randomArtifactPrefab);
         }
 
         private ArtifactDataSO GetRandomArtifact(IEnumerable<ArtifactDataSO> artifacts, ArtifactRarity rarity)

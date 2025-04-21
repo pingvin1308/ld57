@@ -22,6 +22,9 @@ namespace Game.Scripts
         [field: SerializeField]
         public float RevealingRange { get; private set; }
 
+        [field: SerializeField]
+        public int UpgradeLevel { get; private set; }
+
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -30,15 +33,20 @@ namespace Game.Scripts
             _collider2D.enabled = false;
         }
 
+        public void ToggleRevealingMode()
+        {
+            RevealingMode = !RevealingMode;
+            _spriteRenderer.enabled = RevealingMode;
+            _collider2D.enabled = RevealingMode;
+        }
+
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (UpgradeLevel == 0)
             {
-                RevealingMode = !RevealingMode;
-                _spriteRenderer.enabled = RevealingMode;
-                _collider2D.enabled = RevealingMode;
+                return;
             }
-
+            
             if (RevealingMode)
             {
                 var mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -59,6 +67,11 @@ namespace Game.Scripts
             {
                 artifact.Reveal();
             }
+        }
+
+        public void ApplyUpgrade(int upgradeLevel)
+        {
+            UpgradeLevel = upgradeLevel;
         }
     }
 }
