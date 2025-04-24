@@ -102,9 +102,9 @@ namespace Game.Scripts
 
             //todo: Вынести расчет эффектов в обработчик эвента обновления инвентаря.
             //Таким образом не будем рассчитывать эффекты в Update
-            var speedModifier = 0;
-            var frictionModifier = 0;
-            var accelerationModifier = 0;
+            var speedModifier = 0f;
+            var frictionModifier = 0f;
+            var accelerationModifier = 0f;
             var sneakers = Inventory.CollectedArtifacts.Count(x => x.ArtifactId == ArtifactId.Sneakers);
             speedModifier += sneakers * 2;
             frictionModifier += -sneakers * 2;
@@ -114,6 +114,11 @@ namespace Game.Scripts
             speedModifier += -lightWeight * 2;
             frictionModifier += lightWeight * 2;
             accelerationModifier += lightWeight * 2;
+
+            if (Inventory.CollectedArtifacts.Any(x => x.ArtifactId == ArtifactId.SlippyBanana))
+            {
+                frictionModifier = -Friction.BaseValue;
+            }
 
             Speed.Apply(speedModifier);
             Friction.Apply(frictionModifier);

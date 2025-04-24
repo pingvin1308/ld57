@@ -17,6 +17,6 @@ MonoBehaviour:
   <BasePrice>k__BackingField: 20
   <Rarity>k__BackingField: 0
   <Type>k__BackingField: 1
-  <LevelType>k__BackingField: 1
+  <LevelType>k__BackingField: 0
   <AcquisitionMethod>k__BackingField: 0
   <StartingLevel>k__BackingField: 4

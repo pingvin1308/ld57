@@ -68,7 +68,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 1145146644600593148, guid: a04142a48835a56419e834772150e9cf, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -90,4 +90,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _closedSlot: {fileID: -1174418236399595928, guid: a04142a48835a56419e834772150e9cf, type: 3}
   _openedSlot: {fileID: 1145146644600593148, guid: a04142a48835a56419e834772150e9cf, type: 3}
+  _slotImage: {fileID: 0}
   <Item>k__BackingField: {fileID: 0}

@@ -34,7 +34,6 @@ namespace Game.Scripts
 
         public bool IsEnoughSpace => Artifacts.Count(x => x != null) < MaxSize.Current;
         
-    
         public int Money
         {
             get => _money;
@@ -59,7 +58,7 @@ namespace Game.Scripts
                 return;
             }
             
-            for (int i = 0; i < MaxSize.Current; i++)
+            for (var i = 0; i < MaxSize.Current; i++)
             {
                 if (Artifacts[i] == null)
                 {
@@ -114,18 +113,10 @@ namespace Game.Scripts
         {
             if (other.TryGetComponent<Artifact>(out var artifact) && artifact.IsPickable)
             {
-                if (!IsEnoughSpace) return;
+                if (!IsEnoughSpace && artifact.Data.Type != ArtifactType.Currency) return;
                 OnArtifactCollected(artifact.Data);
                 artifact.Collected?.Invoke(artifact.Data);
                 Destroy(artifact.gameObject);
-                // // Здесь можно добавить звук, эффект, счетчик и т.д.
-                // if (player.Inventory.IsEnoughSpace)
-                // {
-                //     Debug.Log("Предмет подобран!");
-                //     Collected?.Invoke(Data);
-                //     Collected?.RemoveAllListeners();
-                //     Destroy(gameObject);
-                // }
             }
         }
     }
